@@ -20,18 +20,23 @@ body {
 	position:fixed;
 	border-radius:300px;
 	/*background:-webkit-gradient( radial, 100 0, 300, 180 150, 60, from(rgba(0,0,0,0)), to(rgba(255,255,255,0.5)) ) rgba(0,0,0,0);*/
-	    background-color:transparent;
+    background-color:transparent;
 	background-image: -webkit-radial-gradient(rgba(255,255,255,0.5) 0, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.3) 32%, rgba(255,255,255,0) 33%);
+	background-image: -webkit-gradient(rgba(255,255,255,0.5) 0, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.3) 32%, rgba(255,255,255,0) 33%);
 	background-size:100% 100%;
 	background-position: 0 -80px;
 	background-repeat:no-repeat;
 	top:50%;
 	left:50%;
 	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
 	border:40px solid #000;
 	margin-left:-150px;
 	margin-top:-150px;
 	box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
+	-webkit-box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
+	-moz-box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
 }
 #title,#dateTime{
 	position:fixed;
