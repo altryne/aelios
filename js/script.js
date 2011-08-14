@@ -78,6 +78,7 @@ $(document).ready(function(){
         canvas = document.getElementById("dayLightCanvas");
         context = canvas.getContext("2d");
         canvas.width = canvas.width;
+        context.beginPath();
         context.lineWidth = 44;
         centerX = centerY = canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
@@ -90,6 +91,7 @@ $(document).ready(function(){
         context.arc(centerX, centerY, radius, startingAngle, endingAngle, true);
         context.strokeStyle = "black"; // line color
         context.stroke();
+        
         context.beginPath();
         context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
         context.strokeStyle = "white"; // line color
