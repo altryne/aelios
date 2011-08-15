@@ -15,33 +15,36 @@ body {
 
 /*cool aelios marker*/
 #marker{
-	height:320px;
-	width:320px;
+	height:400px;
+	width:400px;
 	position:fixed;
 	border-radius:400px;
 	/*background:-webkit-gradient( radial, 100 0, 300, 180 150, 60, from(rgba(0,0,0,0)), to(rgba(255,255,255,0.5)) ) rgba(0,0,0,0);*/
     background-color:transparent;
-	/*background-image: -webkit-radial-gradient(rgba(255,255,255,0.5) 0, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.3) 32%, rgba(255,255,255,0) 33%);*/
-	/*background-image: -webkit-gradient(rgba(255,255,255,0.5) 0, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.3) 32%, rgba(255,255,255,0) 33%);*/
-	/*background-size:100% 100%;*/
-	/*background-position: 0 -80px;*/
-	/*background-repeat:no-repeat;*/
+
 	top:50%;
 	left:50%;
-	/*box-sizing:border-box;*/
-	/*-webkit-box-sizing:border-box;*/
-	/*-moz-box-sizing:border-box;*/
-	border:20px solid #000;
-	margin-left:-180px;
+	/*border:20px solid #000;*/
+	margin-left:-200px;
 	margin-top:-180px;
 	box-shadow:0 0 45px #000;
 	-webkit-box-shadow:0 0 45px #000;
 	-moz-box-shadow:0 0 45px #000;
 }
+#rotate{
+    width:100%;
+    height: 100%;
+    background: url(../img/rotator.png) 0 0 no-repeat;
+    background-size:100%;
+    position: absolute;
+    left:0;
+    top:0;
+    z-index: 15;
+}
 #glass{
-    width: 120px;
-    height: 120px;
-    border-radius: 120px;
+    width: 160px;
+    height: 160px;
+    border-radius: 160px;
     background: -webkit-linear-gradient(top,rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
     background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3) 50%, rgba(255,255,255,0) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,rgba(255, 255, 255, 0.3)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
@@ -49,36 +52,37 @@ body {
 	background: linear-gradient(top, rgba(255, 255, 255, 0.3) 50%,rgba(255,255,255,0) 100%);
     position: absolute;
     top: 70px;
-    left: 100px;
+    left: 50%;
+    margin-left: -80px;
     box-shadow: 0px -10px 17px rgba(255,255,255,0.2);
 }
 #pointer{
     position: absolute;
-    right:36px;
-    top:147px;
+    right:90px;
+    top:183px;
     background: url(../img/pointer.png) 0 0 no-repeat;
     height:33px;
     width:120px;
-    -webkit-transition:all 500ms ease-in;
-    -moz-transition:all 500ms ease-in;
-    transition:all 500ms ease-in;
-    -webkit-transform:rotate(0deg);
+    -webkit-transition:all 700ms ease-in-out;
+    -moz-transition:all 700ms ease-in-out;
+    transition:all 700ms ease-in-out;
+    -webkit-transform:rotate3d(0deg) translateZ(0);
 }
 .drag #pointer{
-    -webkit-transform:rotate(90deg);
+    -webkit-transform:rotate(90deg) translateZ(0);
     width: 40px;
-    right: 142px;
-    top: 228px;
+    right: 182px;
+    top: 280px;
 }
 #shadow{
-    width:200px;
-    height: 200px;
-    border-radius: 200px;
+    width:280px;
+    height: 280px;
+    border-radius: 400px;
     position: absolute;
     top:50%;
     left:50%;
-    margin-left:-100px;
-    margin-top:-100px;
+    margin-left:-140px;
+    margin-top:-140px;
     /*background: green;*/
     
 	box-shadow:inset 15px 1px 60px rgba(0,0,0,0.5),inset -15px 1px 60px rgba(0,0,0,0.5);
@@ -169,6 +173,7 @@ body {
 	text-transform:uppercase;
 	text-shadow:none;
     width:auto;
+    min-width: auto;
 }
 #title .titleCont{
 	width:auto;
@@ -205,7 +210,8 @@ body {
 
 
 #dayLightCanvas{
-    
+    left:18px;
+    top:18px;
     position: absolute;
 }
 #marker::after{
@@ -213,8 +219,8 @@ body {
     background: url(../img/ring.png) 0 0 no-repeat;
     background-size:100% 100%;
     position: absolute;
-    height: 320px;
-    width:320px;
-    left:0;
-    top:0;
+    height: 364px;
+    width:364px;
+    left:18px;
+    top:18px;
 }

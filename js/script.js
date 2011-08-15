@@ -159,7 +159,7 @@ aelios = {
         canvas = document.getElementById("dayLightCanvas");
         context = canvas.getContext("2d");
         context.beginPath();
-        context.lineWidth = 38;
+        context.lineWidth = 44;
         centerX = centerY = canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
         radius = canvas.offsetWidth / 2 - context.lineWidth/2;

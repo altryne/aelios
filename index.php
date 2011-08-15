@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <script type="text/javascript" src="../live.js"></script>
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
+    <script type="text/javascript" src="js/jquery.transform.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript" src="js/script.js"></script>
 </head>
@@ -39,10 +40,12 @@
 <div id="mylocation"></div>
 <div id="search"></div>
 <div id="marker">
-    <canvas id="dayLightCanvas" width="320" height="320"></canvas>
+    <div id="pointer"></div>
+    <div id="rotate"></div>
+    <canvas id="dayLightCanvas" width="364" height="364"></canvas>
     <div id="glass"></div>
     <div id="shadow"></div>
-    <div id="pointer"></div>
+
 </div>
     </div>
 </body>
