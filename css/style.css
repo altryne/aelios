@@ -35,7 +35,7 @@ body {
 	margin-left:-180px;
 	margin-top:-180px;
 	box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
-	-webkit-box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
+	-webkit-box-shadow:0 0 45px #000,inset 1px 1px 60px #000;
 	-moz-box-shadow:0 0 45px #000,inset 1px 1px 45px #000;
 }
 #glass{

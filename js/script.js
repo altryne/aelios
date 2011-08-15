@@ -4,15 +4,32 @@
  * Date: 25/5/11
  * Time: 03:42
  */
-var mapLoaded = 0;
-var dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var mapLoaded = 0
+    ,dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+    ,months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    ,prevDeg = {start:360,end:1080}
+    ,curDeg = {start:360,end:1080}
+    ,degOffset = 90 //deg to start from bottom center
+    ;
+
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          window.oRequestAnimationFrame      ||
+          window.msRequestAnimationFrame     ||
+          function(/* function */ callback, /* DOMElement */ element){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
+
 $(document).ready(function(){
     var map;
     var geocoder;
     function updateCurrentLocation(curLoc){
         $('#loader').fadeIn();
-        $('#template').removeClass('drag');
         if (geocoder) {
             var latlngStr = String(curLoc);
             latlngStr = latlngStr.substring(1,latlngStr.length-1);
@@ -26,7 +43,8 @@ $(document).ready(function(){
                   lng:lng
               },
               function(data) {
-                  if (data.time) {
+                  if (data && data.time) {
+                      $('#template').removeClass('drag');
                       var _date = data.time.split(' ')[0];
                       day = new Date(_date.split('-').join('/'));
                       $('#time').html(data.time.split(' ')[1]);
@@ -64,20 +82,46 @@ $(document).ready(function(){
         $('#template').addClass('drag');
     }
     updateLightHours = function(beginTime,endTime) {
-        var degOffset = 90 //deg to start from bottom center
+        //save current daylight state to cache
+        prevDeg = curDeg;
         var beginTime = beginTime.split(':');
         var beginTimeInMinutes = parseInt(beginTime[0], 10) * 60 + parseInt(beginTime[1], 10);
         var endTime = endTime.split(':');
         var endTimeInMinutes = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10);
         //each minute == 0.25 deg
-        var beginDegFromTime = beginTimeInMinutes * .25 - degOffset;
-        var endDegFromTime = endTimeInMinutes * .25 - degOffset;
-        drawLight(beginDegFromTime,endDegFromTime);
-    }
-    drawLight = function(beginDeg,endDeg){
+        curDeg = {
+            start : beginTimeInMinutes,
+            end : endTimeInMinutes
+        }
+        animloop();
+
+    };
+    animloop = function(){
+        directionObj = {
+            start : (curDeg.start > prevDeg.start) ? -1 : 1,
+            end : (curDeg.end > prevDeg.end) ? -1 : 1
+        }
+        drawLight(directionObj);
+        console.log(prevDeg.start,curDeg.start,directionObj.start);
+//        if (prevDeg.start != curDeg.start && prevDeg.end != curDeg.end && prevDeg.start < 1439) {
+//            drawLight(directionObj);
+//            requestAnimFrame(animloop, document.getElementById("dayLightCanvas"));
+//        }
+    };
+    drawLight = function(directionObj){
+        console.log(prevDeg.start,curDeg.start);
+        beginDeg = prevDeg.start - directionObj.start;
+        endDeg = prevDeg.end - directionObj.end;
+
+        prevDeg = {start:beginDeg,end:endDeg};
+
+        //transform minutes to degrees each minute == 0.25 deg
+        //probobly there's a smarter way then converting from time to minutes to degrees to radians
+        beginDeg =  parseInt(beginDeg * .25,10) - degOffset;
+        endDeg = parseInt(endDeg * .25,10) - degOffset;
+
         canvas = document.getElementById("dayLightCanvas");
         context = canvas.getContext("2d");
-        canvas.width = canvas.width;
         context.beginPath();
         context.lineWidth = 44;
         centerX = centerY = canvas.offsetWidth / 2;
@@ -138,3 +182,8 @@ $(document).ready(function(){
     createMap();
 
   });
+
+window.onError = function(){
+    throw new Error('something got fucked up');
+    
+}
