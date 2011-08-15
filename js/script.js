@@ -4,31 +4,81 @@
  * Date: 25/5/11
  * Time: 03:42
  */
-var mapLoaded = 0
-    ,dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-    ,months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    ,prevDeg = {start:360,end:1080}
-    ,curDeg = {start:360,end:1080}
-    ,degOffset = 90 //deg to start from bottom center
-    ;
-
-// shim layer with setTimeout fallback
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          window.oRequestAnimationFrame      ||
-          window.msRequestAnimationFrame     ||
-          function(/* function */ callback, /* DOMElement */ element){
-            window.setTimeout(callback, 1000 / 60);
-          };
-})();
 
 
-$(document).ready(function(){
-    var map;
-    var geocoder;
-    function updateCurrentLocation(curLoc){
+aelios = {
+    o : {
+        mapLoaded : 0
+        ,dayOfWeek : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+        ,months : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        ,curDeg : {start:367,end:1080}
+        ,degOffset : 90 //deg to start from bottom center
+    },
+    init : function(){
+        var map;
+        var geocoder;
+
+        //create 2 dummy divs to animate canvas with jquery off of them
+        $('<div id="one"/>').css({'top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
+
+        //prevent canvas from premature painting, only paint on image load
+        aelios.o.img = $('<img/>').attr('src','img/repeat.jpg').load(function(){
+            //draw initial light stages on canvas
+            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end);
+        })
+
+
+        //initiate google map
+        this.createMap();
+    },
+    createMap : function(){
+        //todo:search localstorage for previously set latlng
+        var myLatlng = new google.maps.LatLng(51.5085932, -0.1247547);
+        var myOptions = {
+            zoom: 6,
+            center: myLatlng,
+            mapTypeId: google.maps.MapTypeId.HYBRID,
+            navigationControl: true,
+            navigationControlOptions: {
+                style:
+                        google.maps.NavigationControlStyle.SMALL
+            },
+            mapTypeControl: false
+        }
+        geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById("mainmap"), myOptions);
+
+//        this.updateCurrentLocation(map.getCenter());
+        this.bindMapEvents(map);
+
+    },
+    bindMapEvents : function(map){
+        google.maps.event.addListener(map, 'dragend', function() {
+            aelios.updateCurrentLocation(map.getCenter());
+        });
+        google.maps.event.addListener(map, 'tilt_changed', function() {
+            aelios.updateCurrentLocation(map.getCenter());
+        });
+//        google.maps.event.addListener(map, 'zoom_changed', function() {
+//            updateCurrentLocation(map.getCenter());
+//        });
+        google.maps.event.addListener(map, 'dragstart', aelios.dragstarted);
+        google.maps.event.addListener(map, 'tilesloaded', function() {
+            if(aelios.o.mapLoaded) return false;
+            aelios.o.mapLoaded = true;
+        });
+        $('#mylocation').bind('click',function(){
+            navigator.geolocation.getCurrentPosition(function(data){
+                var myLatlng = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
+                map.setOptions({
+                    zoom : 10
+                });
+                map.panTo(myLatlng);
+                aelios.updateCurrentLocation(map.getCenter())
+            });
+        });
+    },
+    updateCurrentLocation : function(curLoc){
         $('#loader').fadeIn();
         if (geocoder) {
             var latlngStr = String(curLoc);
@@ -49,8 +99,8 @@ $(document).ready(function(){
                       day = new Date(_date.split('-').join('/'));
                       $('#time').html(data.time.split(' ')[1]);
                       //split datetime to time
-                      updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1]);
-                      $('#date').html(dayOfWeek[day.getDay()] + ', ' + months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
+                      aelios.updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1]);
+                      $('#date').html(aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
                   }
                   if (data.countryName) {
                       $('#country').html(data.countryName);
@@ -77,53 +127,39 @@ $(document).ready(function(){
                 }
               });
             }
-    }
-    dragstarted = function(){
+    },
+    dragstarted : function(){
         $('#template').addClass('drag');
-    }
-    updateLightHours = function(beginTime,endTime) {
-        //save current daylight state to cache
-        prevDeg = curDeg;
+    },
+    updateLightHours : function(beginTime,endTime) {
         var beginTime = beginTime.split(':');
         var beginTimeInMinutes = parseInt(beginTime[0], 10) * 60 + parseInt(beginTime[1], 10);
         var endTime = endTime.split(':');
         var endTimeInMinutes = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10);
-        //each minute == 0.25 deg
-        curDeg = {
-            start : beginTimeInMinutes,
-            end : endTimeInMinutes
-        }
-        animloop();
-
-    };
-    animloop = function(){
-        directionObj = {
-            start : (curDeg.start > prevDeg.start) ? -1 : 1,
-            end : (curDeg.end > prevDeg.end) ? -1 : 1
-        }
-        drawLight(directionObj);
-        console.log(prevDeg.start,curDeg.start,directionObj.start);
-//        if (prevDeg.start != curDeg.start && prevDeg.end != curDeg.end && prevDeg.start < 1439) {
-//            drawLight(directionObj);
-//            requestAnimFrame(animloop, document.getElementById("dayLightCanvas"));
-//        }
-    };
-    drawLight = function(directionObj){
-        console.log(prevDeg.start,curDeg.start);
-        beginDeg = prevDeg.start - directionObj.start;
-        endDeg = prevDeg.end - directionObj.end;
-
-        prevDeg = {start:beginDeg,end:endDeg};
-
+        //piggyBack on jquery's animate, to animate canvas properties
+        $('#one').animate({
+            left:beginTimeInMinutes,
+            top:endTimeInMinutes
+            },{
+            duration : 1200,
+            step : function(now,fx){
+                aelios.drawLight(
+                    parseInt($(this).css('left')),
+                    parseInt($(this).css('top'))
+                )
+            }
+        })
+    },
+    drawLight : function(beginDeg,endDeg){
         //transform minutes to degrees each minute == 0.25 deg
         //probobly there's a smarter way then converting from time to minutes to degrees to radians
-        beginDeg =  parseInt(beginDeg * .25,10) - degOffset;
-        endDeg = parseInt(endDeg * .25,10) - degOffset;
+        beginDeg =  parseInt(beginDeg * .25,10) - this.o.degOffset;
+        endDeg = parseInt(endDeg * .25,10) - this.o.degOffset;
 
         canvas = document.getElementById("dayLightCanvas");
         context = canvas.getContext("2d");
         context.beginPath();
-        context.lineWidth = 44;
+        context.lineWidth = 38;
         centerX = centerY = canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
         radius = canvas.offsetWidth / 2 - context.lineWidth/2;
@@ -134,56 +170,22 @@ $(document).ready(function(){
 
         context.arc(centerX, centerY, radius, startingAngle, endingAngle, true);
         context.strokeStyle = "black"; // line color
+        context.strokeStyle = context.createPattern(aelios.o.img[0], 'repeat')
         context.stroke();
-        
+
         context.beginPath();
         context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
         context.strokeStyle = "white"; // line color
         context.stroke();
     }
-    function createMap() {
-        var myLatlng = new google.maps.LatLng(51.5085932, -0.1247547);
-        var myOptions = {
-            zoom: 6,
-            center: myLatlng,
-            mapTypeId: google.maps.MapTypeId.HYBRID,
-            navigationControl: true,
-            navigationControlOptions: {
-                style:
-                        google.maps.NavigationControlStyle.SMALL
-            },
-            mapTypeControl: false
-        }
-        geocoder = new google.maps.Geocoder();
-        map = new google.maps.Map(document.getElementById("mainmap"), myOptions);
-        google.maps.event.addListener(map, 'dragend', function() {
-            updateCurrentLocation(map.getCenter());
-        });
-        google.maps.event.addListener(map, 'dragstart', dragstarted);
-        google.maps.event.addListener(map, 'tilesloaded', function() {
-            if(mapLoaded) return false;
-            mapLoaded = true;
-//            var html = $('#template').css('display','block');
-//            $(html).appendTo('#mainmap>div>div:first-child>div>div');
-        });
-        $('#mylocation').bind('click',function(){
-            navigator.geolocation.getCurrentPosition(function(data){
-                var myLatlng = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
-                map.setOptions({
-                    zoom : 10
-                });
-                map.panTo(myLatlng);
-                updateCurrentLocation(map.getCenter())
-            });
-        });
-        updateCurrentLocation(map.getCenter());
-    }
-    //run it
-    createMap();
+}
 
+$(document).ready(function(){
+    aelios.init();
   });
 
 window.onError = function(){
+    console.error('WTF DUDE??? WHAT DID U DO?');
     throw new Error('something got fucked up');
     
 }
