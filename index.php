@@ -23,30 +23,34 @@
 
 </div>
 <div id="template">
-<div id="title">
-    <div class="titleCont">
-        <div id='location'></div>
-        <div id='country'></div>
-    </div>
-</div>
-<div id="dateTime">
-    <div class="titleCont">
-        <div id='time'></div>
-        <div id='date'>
 
+    <div id="dateTime">
+
+            <div id='time'></div>
+            <div id='date'>
+
+            </div>
+        
+    </div>
+
+    <div id="marker">
+        <div id="pointer"></div>
+        <div id="rotate"></div>
+        <canvas id="dayLightCanvas" width="364" height="364"></canvas>
+        <div id="glass"></div>
+        <div id="shadow"></div>
+
+    </div>
+    <div id="overlay"></div>
+    <div id="title">
+        <div class="titleCont">
+            <div id='location'>Somewhere...</div>
+            <div id='country'>World</div>
+            <input type="text" id="searchInput" placeholder="Search"/>
         </div>
     </div>
+    <div id="mylocation"></div>
+    <div id="search"></div>
 </div>
-<div id="mylocation"></div>
-<div id="search"></div>
-<div id="marker">
-    <div id="pointer"></div>
-    <div id="rotate"></div>
-    <canvas id="dayLightCanvas" width="364" height="364"></canvas>
-    <div id="glass"></div>
-    <div id="shadow"></div>
-
-</div>
-    </div>
 </body>
 </html>

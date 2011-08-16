@@ -9,10 +9,12 @@
 aelios = {
     o : {
         mapLoaded : 0
+        ,firstTime : true
         ,dayOfWeek : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
         ,months : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         ,curDeg : {start:367,end:1080}
         ,degOffset : 90 //deg to start from bottom center
+        ,titleWidth : 150
     },
     init : function(){
         var map;
@@ -48,7 +50,6 @@ aelios = {
         geocoder = new google.maps.Geocoder();
         map = new google.maps.Map(document.getElementById("mainmap"), myOptions);
 
-//        this.updateCurrentLocation(map.getCenter());
         this.bindMapEvents(map);
 
     },
@@ -57,7 +58,9 @@ aelios = {
             aelios.updateCurrentLocation(map.getCenter());
         });
         google.maps.event.addListener(map, 'tilt_changed', function() {
-            aelios.updateCurrentLocation(map.getCenter());
+            if(!aelios.o.firstTime){
+                aelios.updateCurrentLocation(map.getCenter());
+            }
         });
 //        google.maps.event.addListener(map, 'zoom_changed', function() {
 //            updateCurrentLocation(map.getCenter());
@@ -77,6 +80,9 @@ aelios = {
                 aelios.updateCurrentLocation(map.getCenter())
             });
         });
+        $('#search').bind('click',aelios.search);
+        $('#overlay').bind('click',aelios.searchOff);
+        
     },
     updateCurrentLocation : function(curLoc){
         $('#loader').fadeIn();
@@ -104,10 +110,12 @@ aelios = {
                       $('#date').html(aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
                   }
                   if (data.countryName) {
-                      $('#country').html(data.countryName);
+                      $('#country').html(data.countryName).css('width','');
                   } else {
-                      $('#country').html('World');
+                      $('#country').html('World').css('min-width','1%');
                   }
+                  aelios.o.titleWidth = $('#title').find('.titleCont').width();
+
               }
             );
             var latlng = new google.maps.LatLng(lat, lng);
@@ -126,6 +134,7 @@ aelios = {
                 } else {
                    $('#location').html('Somewhere...');
                 }
+                aelios.o.titleWidth = $('#title').find('.titleCont').width();
               });
             }
     },
@@ -142,7 +151,7 @@ aelios = {
             left:beginTimeInMinutes,
             top:endTimeInMinutes
             },{
-            duration : 1200,
+            duration : 400,
             step : function(now,fx){
                 aelios.drawLight(
                     parseInt($(this).css('left')),
@@ -178,6 +187,29 @@ aelios = {
         context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
         context.strokeStyle = "white"; // line color
         context.stroke();
+    },
+    search : function(){
+        $('.titleCont').animate({width:300,height:30,marginTop:15},{
+            duration:200
+        },{
+            complete:function(){$('#searchInput').focus()}
+        });
+        if($('body').is('.search')){
+            console.log('start searching');
+        }
+
+        $('body').addClass('search');
+    },
+    searchOff : function(){
+        $('body').removeClass('search');
+        $('.titleCont').animate({width:aelios.o.titleWidth,height:50,marginTop:0},{
+            duration:200,
+            easing: 'swing',
+            complete: function(){
+                $('.titleCont').width('');
+            }
+        });
+
     }
 }
 
