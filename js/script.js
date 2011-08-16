@@ -19,7 +19,7 @@ aelios = {
         var geocoder;
 
         //create 2 dummy divs to animate canvas with jquery off of them
-        $('<div id="one"/>').css({'top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
+        $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
 
         //prevent canvas from premature painting, only paint on image load
         aelios.o.img = $('<img/>').attr('src','img/repeat.jpg').load(function(){
@@ -90,7 +90,8 @@ aelios = {
               {
                   'uID': 1,
                   lat:lat,
-                  lng:lng
+                  lng:lng,
+                  'username' : 'altryne'
               },
               function(data) {
                   if (data && data.time) {
