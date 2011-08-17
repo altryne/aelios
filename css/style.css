@@ -40,6 +40,8 @@ body {
     left:0;
     top:0;
     z-index: 15;
+    -webkit-transform-origin:50% 50%;
+	-webkit-transform:rotateZ(0rad);
 }
 #glass{
     width: 160px;

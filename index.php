@@ -16,6 +16,7 @@
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
     <script type="text/javascript" src="js/jquery.transform.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="js/rotator.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
 </head>
 <body>

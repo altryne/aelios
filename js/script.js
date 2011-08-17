@@ -29,7 +29,7 @@ aelios = {
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end);
         })
 
-
+        zodiac.init($('#marker'),$('#rotate'));
         //initiate google map
         this.createMap();
     },
@@ -215,10 +215,5 @@ aelios = {
 
 $(document).ready(function(){
     aelios.init();
-  });
+});
 
-window.onError = function(){
-    console.error('WTF DUDE??? WHAT DID U DO?');
-    throw new Error('something got fucked up');
-    
-}
