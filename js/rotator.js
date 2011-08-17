@@ -17,7 +17,10 @@ var zodiac = {
 	controller: null,
 	angle: 0,
 	startAngle: 0,
-    slices: Math.PI/4,	// 8 slices
+    slicesCount : 8,
+    stepsCount : 48,
+    slices: Math.PI/ 4,	// 8 slices
+    steps: Math.PI/ 24,	// 48 steps
     track_position : false,
 
 	handleEvent: function (e) {
@@ -67,13 +70,11 @@ var zodiac = {
 		var startY = e.y - this.originY;
 		this.startAngle = Math.atan2(startY, startX) - this.angle;
 
-
-
 	},
 
 	rotateMove: function(e,evt) {
         if(!this.track_position) {return false};
-        console.log(this.getSelectedValue());
+        console.log(this.getSegment('steps'));
 		var dx = e.x - this.originX;
 		var dy = e.y - this.originY;
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
@@ -86,19 +87,23 @@ var zodiac = {
         
 		if( this.angle%this.slices ) {
 			this.angle = Math.round(this.angle/this.slices) * this.slices;
+            
 			this.el[0].style.webkitTransitionDuration = '550ms';
 			this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
 		}
 	},
-    getSelectedValue: function() {
-        slicesNum = 8
-		var selected = Math.floor(Math.abs(this.angle) / this.slices / slicesNum);
+    getSegment: function(segment) {
+        segment = segment || 'slices';
+
+        count = this[segment+'Count'];
+        
+		var selected = Math.floor(Math.abs(this.angle) / this[segment] / count);
 		if (this.angle < 0)
 			selected = -selected;
 
-		selected = Math.round(this.angle/this.slices) - selected * slicesNum;
+		selected = Math.round(this.angle/this[segment]) - selected * count;
 		if (selected < 0)
-			selected = slicesNum + selected;
+			selected = count + selected;
 
 		return selected;
 	}
