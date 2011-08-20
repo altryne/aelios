@@ -37,10 +37,11 @@
     <div id="marker">
         <div id="pointer"></div>
         <div id="rotate"></div>
+        <canvas id="nightCanvas" width="364" height="364"></canvas>
         <canvas id="dayLightCanvas" width="364" height="364"></canvas>
         <div id="glass"></div>
         <div id="shadow"></div>
-
+        <div id="boundingBox"></div>
     </div>
     <div id="overlay"></div>
     <div id="title">

@@ -65,16 +65,20 @@ body {
     background: url(../img/pointer.png) 0 0 no-repeat;
     height:33px;
     width:120px;
-    -webkit-transition:all 700ms ease-in-out;
-    -moz-transition:all 700ms ease-in-out;
-    transition:all 700ms ease-in-out;
-    -webkit-transform:rotate3d(0deg) translateZ(0);
+    margin-left: -14px;
+    margin-top: -16px;
+    -webkit-transition:-webkit-transform 200ms ease-in-out;
+    -moz-transition:-moz-transform 200ms ease-in-out;
+    transition:transform 200ms ease-in-out;
+
+    -webkit-transform:rotateZ(0rad);
+    -webkit-transform-origin: 10.5% 50%;
 }
 .drag #pointer{
-    -webkit-transform:rotate(90deg) translateZ(0);
-    width: 40px;
-    right: 182px;
-    top: 280px;
+    /*-webkit-transform:rotate(90deg) translateZ(0);*/
+    /*width: 40px;*/
+    /*right: 182px;*/
+    /*top: 280px;*/
 }
 #shadow{
     width:280px;
@@ -276,12 +280,19 @@ body {
     background: linear-gradient(top, rgba(210, 210, 210, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 /*end search mode*/
-#dayLightCanvas{
+#dayLightCanvas,#nightCanvas{
     left:18px;
     top:18px;
     position: absolute;
 }
-#marker::after{
+#boundingBox{
+    position: absolute;
+    left:100px;
+    top:100px;
+    width:200px;
+    height: 200px;
+}
+#marker::before{
     content:"";
     background: url(../img/ring.png) 0 0 no-repeat;
     background-size:100% 100%;
@@ -290,4 +301,38 @@ body {
     width:364px;
     left:18px;
     top:18px;
+    z-index: 10;
+}
+#marker::after{
+    content:"";
+    background: url(../img/rimH.png) 0 0 no-repeat;
+    background-size:100% 100%;
+    position: absolute;
+    height: 398px;
+    width:398px;
+    left:0;
+    top:0;
+    z-index: 1500;
+}
+
+
+@-webkit-keyframes shake {
+	0% { -webkit-transform: translate(2px, 0)  }
+	10% { -webkit-transform: translate(-1px,0)  }
+	20% { -webkit-transform: translate(-3px, 0px)  }
+	30% { -webkit-transform: translate(0px, 0)  }
+	40% { -webkit-transform: translate(1px, 0)  }
+	50% { -webkit-transform: translate(-1px, 0)  }
+	60% { -webkit-transform: translate(-3px, 0)  }
+	70% { -webkit-transform: translate(2px, 0)  }
+	80% { -webkit-transform: translate(-1px, 0)  }
+	90% { -webkit-transform: translate(2px, 0)  }
+	100% { -webkit-transform: translate(1px, 0)  }
+}
+.error {
+	-webkit-animation-name: shake;
+	-webkit-animation-duration: 0.3s;
+	-webkit-transform-origin:50% 50%;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-timing-function: linear;
 }

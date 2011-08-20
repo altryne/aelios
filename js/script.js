@@ -20,13 +20,14 @@ aelios = {
         var map;
         var geocoder;
 
-        //create 2 dummy divs to animate canvas with jquery off of them
+        //create a dummy div to animate canvas with jquery off of it
         $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
 
         //prevent canvas from premature painting, only paint on image load
         aelios.o.img = $('<img/>').attr('src','img/repeat.jpg').load(function(){
             //draw initial light stages on canvas
-            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end);
+            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'nightCanvas');
+            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'dayLightCanvas');
         })
 
         zodiac.init($('#marker'),$('#rotate'));
@@ -49,14 +50,17 @@ aelios = {
         }
         geocoder = new google.maps.Geocoder();
         map = new google.maps.Map(document.getElementById("mainmap"), myOptions);
-
         this.bindMapEvents(map);
+
 
     },
     bindMapEvents : function(map){
         google.maps.event.addListener(map, 'dragend', function() {
             aelios.updateCurrentLocation(map.getCenter());
         });
+//        google.maps.event.addListener(map, 'drag', function() {
+//            aelios.animatePointer();
+//        });
         google.maps.event.addListener(map, 'tilt_changed', function() {
             if(!aelios.o.firstTime){
                 aelios.updateCurrentLocation(map.getCenter());
@@ -69,6 +73,7 @@ aelios = {
         google.maps.event.addListener(map, 'tilesloaded', function() {
             if(aelios.o.mapLoaded) return false;
             aelios.o.mapLoaded = true;
+            aelios.getBoundingBox();
         });
         $('#mylocation').bind('click',function(){
             navigator.geolocation.getCurrentPosition(function(data){
@@ -81,17 +86,79 @@ aelios = {
             });
         });
         $('#search').bind('click',aelios.search);
+        $('#searchInput').bind('keydown',function(e){
+            if(e.keyCode == 13){
+                aelios.findLocation($(this).prop('value'));
+            }
+        })
         $('#overlay').bind('click',aelios.searchOff);
         
     },
-    updateCurrentLocation : function(curLoc){
+    getBoundingBox : function(){
+        ov = new google.maps.OverlayView();
+        ov.draw = function () {};
+        ov.onRemove = function () {};
+        ov.setMap(map);
+        projection = ov;
+        prj = projection.getProjection();
+        if(!prj) return;
+
+        var container = $('#boundingBox');
+        var padding = $('#boundingBox').width();
+        var northeast = prj.fromContainerPixelToLatLng({x:container.offset().left + padding,y:container.offset().top});
+        var southwest = prj.fromContainerPixelToLatLng({x:container.offset().left,y:container.offset().top + padding});
+        return [Math.round(northeast.Oa*100)/100,Math.round(northeast.Pa*100)/100,Math.round(southwest.Oa*100)/100,Math.round(southwest.Pa*100)/100];
+    },
+    updateCurrentLocation : function(curLoc,stilldragging){
+        curLoc = curLoc || map.getCenter();
         $('#loader').fadeIn();
+        //set timeout to use geonames results instead of googles geocoding (much more reliable)
+        var timeout = 1000,t0;
         if (geocoder) {
-            var latlngStr = String(curLoc);
-            latlngStr = latlngStr.substring(1,latlngStr.length-1);
-            latlngStr = latlngStr.split(",");
-            var lat = parseFloat(latlngStr[0]);
-            var lng = parseFloat(latlngStr[1]);
+            //get geodocing data from google
+            var latlng = curLoc;
+              geocoder.geocode({'latLng': latlng}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    country = results[results.length-1].formatted_address.split(',')[0];
+                    place = 'Somewhere...';
+                } else {
+                    place = 'Somewhere...';
+                    country = 'World';
+                }
+                t0 = window.setTimeout(function(){
+                    $('#location').html(place);
+                    $('#country').html(country).css('width','');
+                    aelios.o.titleWidth = $('#title').find('.titleCont').width();
+                    $('#template').removeClass('drag');
+                },timeout);
+              });
+            //cancel the rest of this function if function was called on mouse move event
+            if(stilldragging) return false;
+            //get bset matched city name and location from geonames
+            var lat = curLoc.Oa;
+            var lng = curLoc.Pa;
+            var bounding = aelios.getBoundingBox();
+            var citiesAjax = $.getJSON("http://api.geonames.org/citiesJSON?callback=?",
+                    {
+                        username: 'altryne',
+                        north : bounding[0],
+                        east : bounding[1],
+                        south : bounding[2],
+                        west : bounding[3],
+                        maxRows :1,
+                        timeout : 200
+                    },function(data){
+                        if(data.geonames && data.geonames.length > 0){
+                            window.clearTimeout(t0);
+                            $('#location').html(data.geonames[0].name);
+                            $('#country').html(country).css('width','');
+                            $('#template').removeClass('drag');
+                            var latlng = new google.maps.LatLng(data.geonames[0].lat, data.geonames[0].lng);
+                            aelios.animatePointer(latlng);
+                        }
+                    }
+            );
+            //get sunrise and sunset data from geonames
             var jqxhr = $.getJSON("http://ws.geonames.org/timezoneJSON?callback=?",
               {
                   'uID': 1,
@@ -101,7 +168,6 @@ aelios = {
               },
               function(data) {
                   if (data && data.time) {
-                      $('#template').removeClass('drag');
                       var _date = data.time.split(' ')[0];
                       day = new Date(_date.split('-').join('/'));
                       $('#time').html(data.time.split(' ')[1]);
@@ -109,37 +175,32 @@ aelios = {
                       aelios.updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1]);
                       $('#date').html(aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
                   }
-                  if (data.countryName) {
-                      $('#country').html(data.countryName).css('width','');
-                  } else {
-                      $('#country').html('World').css('min-width','1%');
-                  }
-                  aelios.o.titleWidth = $('#title').find('.titleCont').width();
-
               }
             );
-            var latlng = new google.maps.LatLng(lat, lng);
-              geocoder.geocode({'latLng': latlng}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var place = results[results.length - 2].formatted_address.split(',');
-                    place.pop();
-                    if(!place.length){
-                        place = results[1].formatted_address.split(',');
-                        place.pop();
-                        if(!place.length){
-                            $('#location').html('Somewhere...');
-                        }
-                    }
-                    $('#location').html(place.join(','));
-                } else {
-                   $('#location').html('Somewhere...');
-                }
-                aelios.o.titleWidth = $('#title').find('.titleCont').width();
-              });
-            }
+        }
+    },
+    animatePointer : function(latlng){
+        if(latlng){
+            divpixel = prj.fromLatLngToContainerPixel(latlng);
+        }else{
+            divpixel = {x:$('#marker').width(),y:$('#marker').height()};
+        }
+
+        pointerx = Math.round(divpixel.x - $('#marker').offset().left);
+        pointery = Math.round(divpixel.y - $('#marker').offset().top);
+        $('#pointer').animate({left:pointerx,top:pointery},400);
+
+        //angle calculations
+        var direction = {};
+        direction.x =  (pointerx <= $('#marker').width() / 2) ? 1 : -1 ;
+        direction.y =  (pointery <= $('#marker').height() / 2) ? -1 : 1 ;
+        p2 = {x : pointerx * direction.x,y:pointery * direction.y};
+        var angle = (2 * Math.atan2(p2.y, p2.x)) * 180 / Math.PI ;
+        $('#pointer')[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
     },
     dragstarted : function(){
         $('#template').addClass('drag');
+//        aelios.animatePointer();
     },
     updateLightHours : function(beginTime,endTime) {
         var beginTime = beginTime.split(':');
@@ -151,7 +212,8 @@ aelios = {
             left:beginTimeInMinutes,
             top:endTimeInMinutes
             },{
-            duration : 400,
+            duration : 600,
+            easing : 'easeOutBack',
             step : function(now,fx){
                 aelios.drawLight(
                     parseInt($(this).css('left')),
@@ -160,14 +222,16 @@ aelios = {
             }
         })
     },
-    drawLight : function(beginDeg,endDeg){
+    drawLight : function(beginDeg,endDeg,canvasElm){
+        canvasElm = canvasElm || 'dayLightCanvas';
         //transform minutes to degrees each minute == 0.25 deg
         //probobly there's a smarter way then converting from time to minutes to degrees to radians
         beginDeg =  parseInt(beginDeg * .25,10) - this.o.degOffset;
         endDeg = parseInt(endDeg * .25,10) - this.o.degOffset;
 
-        canvas = document.getElementById("dayLightCanvas");
+        canvas = document.getElementById(canvasElm);
         context = canvas.getContext("2d");
+        context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
         context.beginPath();
         context.lineWidth = 44;
         centerX = centerY = canvas.offsetWidth / 2;
@@ -178,21 +242,21 @@ aelios = {
         endingAngle = (Math.PI / 180) * endDeg;
         counterclockwise = false;
 
-        context.arc(centerX, centerY, radius, startingAngle, endingAngle, true);
-        context.strokeStyle = "black"; // line color
-        context.strokeStyle = context.createPattern(aelios.o.img[0], 'repeat')
-        context.stroke();
-
-        context.beginPath();
-        context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
-        context.strokeStyle = "white"; // line color
-        context.stroke();
+        if(canvasElm == 'nightCanvas'){
+            context.arc(centerX, centerY, radius, 0 , Math.PI*2, true);
+            context.strokeStyle = context.createPattern(aelios.o.img[0], 'repeat')
+            context.stroke();
+        }else{
+            context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
+            context.strokeStyle = "white"; // line color
+            context.stroke();
+        }
     },
     search : function(){
         $('.titleCont').animate({width:300,height:30,marginTop:15},{
             duration:200
         },{
-            complete:function(){$('#searchInput').focus()}
+            complete:function(){}
         });
         if($('body').is('.search')){
             console.log('start searching');
@@ -202,6 +266,7 @@ aelios = {
     },
     searchOff : function(){
         $('body').removeClass('search');
+        $('#searchInput').prop('value','');
         $('.titleCont').animate({width:aelios.o.titleWidth,height:50,marginTop:0},{
             duration:200,
             easing: 'swing',
@@ -210,6 +275,20 @@ aelios = {
             }
         });
 
+    },
+    findLocation : function(address){
+
+        $('#title .titleCont').removeClass('error');
+        geocoder.geocode({ 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK && address != '') {
+                aelios.searchOff();
+                map.setCenter(results[0].geometry.location);
+                aelios.updateCurrentLocation();
+            } else {
+                $('#title .titleCont').addClass('error');
+                $('#searchInput').prop('value','');
+            }
+        })
     }
 }
 
