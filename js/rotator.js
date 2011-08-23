@@ -56,6 +56,7 @@ var zodiac = {
 	    this.originY    = this.controller.position().left / 2;
         
         this.el[0].style.webkitTransitionDuration = '0';
+//        this.el.bind('touchstart touchmove touchend mousedown mousemove', this.handleEvent);
         this.controller.bind('touchstart touchmove touchend mousedown mousemove', this.handleEvent);
         $(document).bind('mouseup mousemove', zodiac.handleEvent);
 

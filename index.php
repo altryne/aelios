@@ -33,7 +33,9 @@
             </div>
         
     </div>
-
+    <div id="offline">
+        Cannot establish internet connection!
+    </div>
     <div id="marker">
         <div id="pointer"></div>
         <div id="rotate"></div>

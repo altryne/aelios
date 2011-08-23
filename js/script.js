@@ -14,7 +14,8 @@ aelios = {
         ,months : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         ,curDeg : {start:367,end:1080}
         ,degOffset : 90 //deg to start from bottom center
-        ,titleWidth : 150
+        ,titleWidth : 150,
+        pointerPrevAngle : 0
     },
     init : function(){
         var map;
@@ -90,7 +91,7 @@ aelios = {
             if(e.keyCode == 13){
                 aelios.findLocation($(this).prop('value'));
             }
-        })
+        });
         $('#overlay').bind('click',aelios.searchOff);
         
     },
@@ -110,6 +111,13 @@ aelios = {
         return [Math.round(northeast.Oa*100)/100,Math.round(northeast.Pa*100)/100,Math.round(southwest.Oa*100)/100,Math.round(southwest.Pa*100)/100];
     },
     updateCurrentLocation : function(curLoc,stilldragging){
+//        check online status
+        if(navigator.onLine){
+            document.querySelector('body').classList.remove('offline');
+        }else{
+            document.querySelector('body').classList.add('offline');
+        }
+        
         curLoc = curLoc || map.getCenter();
         $('#loader').fadeIn();
         //set timeout to use geonames results instead of googles geocoding (much more reliable)
@@ -188,15 +196,26 @@ aelios = {
 
         pointerx = Math.round(divpixel.x - $('#marker').offset().left);
         pointery = Math.round(divpixel.y - $('#marker').offset().top);
-        $('#pointer').animate({left:pointerx,top:pointery},400);
+        $('#pointer').animate({left:pointerx,top:pointery},1500);
 
+        p1 = {x:$('#marker').width()/2,y:$('#marker').height()/2};
         //angle calculations
         var direction = {};
-        direction.x =  (pointerx <= $('#marker').width() / 2) ? 1 : -1 ;
+        direction.x =  (pointerx <= $('#marker').width() / 2) ? -1 : 1 ;
         direction.y =  (pointery <= $('#marker').height() / 2) ? -1 : 1 ;
         p2 = {x : pointerx * direction.x,y:pointery * direction.y};
-        var angle = (2 * Math.atan2(p2.y, p2.x)) * 180 / Math.PI ;
+        p2 = {x : pointerx,y:pointery};
+        var angle = (2 * Math.atan2(p2.y - p1.y, p2.x - p1.y)) * 180 / Math.PI ;
+        
+        if(angle <= 0){
+            angle = angle + 360;
+        }
+        if(angle >= 360){
+            angle = angle - 360;
+        }
+        console.log(angle,aelios.o.pointerPrevAngle);
         $('#pointer')[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
+        aelios.o.pointerPrevAngle = angle;
     },
     dragstarted : function(){
         $('#template').addClass('drag');
@@ -259,7 +278,7 @@ aelios = {
             complete:function(){}
         });
         if($('body').is('.search')){
-            console.log('start searching');
+            aelios.findLocation($('#searchInput').prop('value'));
         }
 
         $('body').addClass('search');
@@ -296,3 +315,5 @@ $(document).ready(function(){
     aelios.init();
 });
 
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+if(typeof document!=="undefined"&&!("classList" in document.createElement("a"))){(function(j){var a="classList",f="prototype",m=(j.HTMLElement||j.Element)[f],b=Object,k=String[f].trim||function(){return this.replace(/^\s+|\s+$/g,"")},c=Array[f].indexOf||function(q){var p=0,o=this.length;for(;p<o;p++){if(p in this&&this[p]===q){return p}}return -1},n=function(o,p){this.name=o;this.code=DOMException[o];this.message=p},g=function(p,o){if(o===""){throw new n("SYNTAX_ERR","An invalid or illegal string was specified")}if(/\s/.test(o)){throw new n("INVALID_CHARACTER_ERR","String contains an invalid character")}return c.call(p,o)},d=function(s){var r=k.call(s.className),q=r?r.split(/\s+/):[],p=0,o=q.length;for(;p<o;p++){this.push(q[p])}this._updateClassName=function(){s.className=this.toString()}},e=d[f]=[],i=function(){return new d(this)};n[f]=Error[f];e.item=function(o){return this[o]||null};e.contains=function(o){o+="";return g(this,o)!==-1};e.add=function(o){o+="";if(g(this,o)===-1){this.push(o);this._updateClassName()}};e.remove=function(p){p+="";var o=g(this,p);if(o!==-1){this.splice(o,1);this._updateClassName()}};e.toggle=function(o){o+="";if(g(this,o)===-1){this.add(o)}else{this.remove(o)}};e.toString=function(){return this.join(" ")};if(b.defineProperty){var l={get:i,enumerable:true,configurable:true};try{b.defineProperty(m,a,l)}catch(h){if(h.number===-2146823252){l.enumerable=false;b.defineProperty(m,a,l)}}}else{if(b[f].__defineGetter__){m.__defineGetter__(a,i)}}}(self))};

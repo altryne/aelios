@@ -67,11 +67,11 @@ body {
     width:120px;
     margin-left: -14px;
     margin-top: -16px;
-    -webkit-transition:-webkit-transform 200ms ease-in-out;
-    -moz-transition:-moz-transform 200ms ease-in-out;
-    transition:transform 200ms ease-in-out;
+    -webkit-transition:-webkit-transform 1000ms ease-in-out;
+    -moz-transition:-moz-transform 1000ms ease-in-out;
+    transition:transform 1000ms ease-in-out;
 
-    -webkit-transform:rotateZ(0rad);
+    -webkit-transform:rotateZ(0deg);
     -webkit-transform-origin: 10.5% 50%;
 }
 .drag #pointer{
@@ -96,7 +96,7 @@ body {
 	-moz-box-shadow:inset 15px 1px 60px rgba(0,0,0,0.5),inset -15px 1px 60px rgba(0,0,0,0.5);
 
 }
-#title,#dateTime{
+#title,#dateTime,#offline{
 	position:fixed;
 	text-align:center;
 	width:100%;
@@ -116,8 +116,20 @@ body {
 }
 #dateTime{
 	bottom:5%;
-    
     font-size: 15px;
+}
+.offline #dateTime{
+    opacity: 0;
+}
+
+body.offline #offline{
+    opacity: 1;
+    bottom:5%;
+    -webkit-transition:all 500ms linear;
+    -moz-transition:all 500ms linear;
+    transition:all 500ms linear;
+    color:#fff;
+    text-shadow: 0 0 40px #ff0000,0 0 40px #ff0000,0 0 40px #ff0000,0 0 40px #ff0000;
 }
 #time{
 	font-size:65px !important;
