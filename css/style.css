@@ -81,9 +81,18 @@ body {
     margin-left: -80px;
     box-shadow: 0px -10px 17px rgba(255,255,255,0.2);
 }
+#pointerCont{
+    position: absolute;
+    height: 200px;
+    width: 200px;
+    left:100px;
+    top: 100px;
+    /*background: rgba(255,0,0,0.3);*/
+    overflow: hidden;
+}
 #pointer{
     position: absolute;
-    left:200px;
+    left:100px;
     top:80px;
     background: url(../img/pointer0.png) 0 0 no-repeat;
     height:123px;
@@ -96,6 +105,11 @@ body {
 
     -webkit-transform:rotateZ(0deg);
     -webkit-transform-origin: 50% 82.1%;
+}
+#pointer.noanim{
+    -webkit-transition-duration : 100ms;
+       -moz-transition-duration : 100ms;
+            transition-duration : 100ms;
 }
 /*debug dot*/
 /*

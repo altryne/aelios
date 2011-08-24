@@ -16,10 +16,16 @@ aelios = {
         ,degOffset : 90 //deg to start from bottom center
         ,titleWidth : 150,
         pointerPrevAngle : 0
+
     },
     init : function(){
         var map;
         var geocoder;
+
+        //set cached variables
+        this.o.$pointerCont = $('#pointerCont');
+        this.o.$pointer = $('#pointer');
+        this.o.$template= $('#template');
 
         //create a dummy div to animate canvas with jquery off of it
         $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
@@ -59,9 +65,9 @@ aelios = {
         google.maps.event.addListener(map, 'dragend', function() {
             aelios.updateCurrentLocation(map.getCenter());
         });
-//        google.maps.event.addListener(map, 'drag', function() {
-//            aelios.animatePointer();
-//        });
+        google.maps.event.addListener(map, 'drag', function() {
+            aelios.animatePointer();
+        });
         google.maps.event.addListener(map, 'tilt_changed', function() {
             if(!aelios.o.firstTime){
                 aelios.updateCurrentLocation(map.getCenter());
@@ -138,6 +144,11 @@ aelios = {
                     $('#country').html(country).css('width','');
                     aelios.o.titleWidth = $('#title').find('.titleCont').width();
                     $('#template').removeClass('drag');
+                    aelios.animatePointer();
+                    //abort cities ajax request if ran out of time
+                    if(citiesAjax) {
+                        citiesAjax.abort();
+                    }
                 },timeout);
               });
             //cancel the rest of this function if function was called on mouse move event
@@ -146,7 +157,7 @@ aelios = {
             var lat = curLoc.Oa;
             var lng = curLoc.Pa;
             var bounding = aelios.getBoundingBox();
-            var citiesAjax = $.getJSON("http://api.geonames.org/citiesJSON?callback=?",
+            citiesAjax = $.getJSON("http://api.geonames.org/citiesJSON?callback=?",
                     {
                         username: 'altryne',
                         north : bounding[0],
@@ -163,6 +174,9 @@ aelios = {
                             $('#template').removeClass('drag');
                             var latlng = new google.maps.LatLng(data.geonames[0].lat, data.geonames[0].lng);
                             aelios.animatePointer(latlng);
+                        }else{
+                            //set pointer to default location
+                            aelios.animatePointer();
                         }
                     }
             );
@@ -188,18 +202,56 @@ aelios = {
         }
     },
     animatePointer : function(latlng){
-        if(latlng){
-            divpixel = prj.fromLatLngToContainerPixel(latlng);
-        }else{
-            divpixel = {x:$('#marker').width(),y:$('#marker').height()};
+        latlng = latlng || false;
+        $marker = aelios.o.$pointerCont;
+        $pointer = aelios.o.$pointer;
+        marker_offset = 15;
+        if(!aelios.o.$template.is('.drag')){
+            aelios.o.pointerPrevLatLng = 0;
         }
 
-        pointerx = Math.round(divpixel.x - $('#marker').offset().left);
-        pointery = Math.round(divpixel.y - $('#marker').offset().top);
-        $('#pointer').animate({left:pointerx,top:pointery},400);
+        //three way,if new latlng,if old latlang not updated, if no latlng or default position
+        if(latlng){
+            $pointer.removeClass('noanim');
+            divpixel = prj.fromLatLngToContainerPixel(latlng);
+            pointerx = Math.round(divpixel.x - $marker.offset().left);
+            pointery = Math.round(divpixel.y - $marker.offset().top);
+            $pointer.animate({top:pointery,left:pointerx},400);
+        }else if(aelios.o.pointerPrevLatLng){
+            $pointer.addClass('noanim');
+            latlng = aelios.o.pointerPrevLatLng;
+            divpixel = prj.fromLatLngToContainerPixel(latlng);
+            pointerx = Math.round(divpixel.x - $marker.offset().left);
+            pointery = Math.round(divpixel.y - $marker.offset().top);
+            //calculate how pointer dissappears when outofbounds and reappears
+            if(pointerx < marker_offset || pointery < marker_offset || pointerx  + marker_offset > $marker.width() || pointery + marker_offset > $marker.height()){
+                if(!$pointer.is('.outOfBounds')){
+                    point = aelios.getPointAt(center,radius+marker_offset*3,angle);
+                    $pointer.addClass('outOfBounds').animate({top:point.y,left:point.x},400);
+                }
+                return;
+            }else if($pointer.is('.outOfBounds')){
+                $pointer.removeClass('outOfBounds').stop()
+                .animate({top:pointery,left:pointerx},200);
+                return;
+            }
+            //move position only if pointer isn't animated
+            //ipad doesn't seem to be able to drag and change css at the same time. shame
+            if(!$pointer.is(':animated')){
+                $pointer.css({top:pointery,left:pointerx});
+            }
+
+        }else{
+            $pointer.removeClass('noanim');
+            pointery = $marker.height() / 2;
+            pointerx = $marker.width() - ($marker.width() / 2-1);
+            $pointer.stop().animate({top:pointery,left:pointerx},400);
+        }
+
+
 
         //angle calculations taken straight from http://beradrian.wordpress.com/2009/03/23/calculating-the-angle-between-two-points-on-a-circle/
-        center = {x:$('#marker').width()/2,y:$('#marker').height()/2};
+        center = {x:$marker.width()/2,y:$marker.height()/2};
         p1 = {x : pointerx,y:pointery};
 		radius = Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
                          + Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y));
@@ -210,16 +262,14 @@ aelios = {
         if(distanceAngle > 180){
             angle = aelios.o.pointerPrevAngle - (360 - distanceAngle);
         }
-        console.log(angle,aelios.o.pointerPrevAngle,distanceAngle);
-
         //debug shit (dot)
 //        $('#dot').css({left:pointerx,top:pointery});
-        $('#pointer')[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
+        $pointer[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
         aelios.o.pointerPrevAngle = angle;
+        aelios.o.pointerPrevLatLng = latlng;
     },
     dragstarted : function(){
         $('#template').addClass('drag');
-//        aelios.animatePointer();
     },
     updateLightHours : function(beginTime,endTime) {
         var beginTime = beginTime.split(':');
@@ -308,12 +358,19 @@ aelios = {
                 $('#searchInput').prop('value','');
             }
         })
+    },
+    //helper functions
+    getPointAt : function (center, radius, angle) {
+        angle *= Math.PI / 180;
+        return {x: center.x + Math.sin(Math.PI - angle) * radius,
+            y: center.y + Math.cos(Math.PI - angle) * radius};
     }
 }
 
 $(document).ready(function(){
     aelios.init();
 });
+
 
 /*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
 if(typeof document!=="undefined"&&!("classList" in document.createElement("a"))){(function(j){var a="classList",f="prototype",m=(j.HTMLElement||j.Element)[f],b=Object,k=String[f].trim||function(){return this.replace(/^\s+|\s+$/g,"")},c=Array[f].indexOf||function(q){var p=0,o=this.length;for(;p<o;p++){if(p in this&&this[p]===q){return p}}return -1},n=function(o,p){this.name=o;this.code=DOMException[o];this.message=p},g=function(p,o){if(o===""){throw new n("SYNTAX_ERR","An invalid or illegal string was specified")}if(/\s/.test(o)){throw new n("INVALID_CHARACTER_ERR","String contains an invalid character")}return c.call(p,o)},d=function(s){var r=k.call(s.className),q=r?r.split(/\s+/):[],p=0,o=q.length;for(;p<o;p++){this.push(q[p])}this._updateClassName=function(){s.className=this.toString()}},e=d[f]=[],i=function(){return new d(this)};n[f]=Error[f];e.item=function(o){return this[o]||null};e.contains=function(o){o+="";return g(this,o)!==-1};e.add=function(o){o+="";if(g(this,o)===-1){this.push(o);this._updateClassName()}};e.remove=function(p){p+="";var o=g(this,p);if(o!==-1){this.splice(o,1);this._updateClassName()}};e.toggle=function(o){o+="";if(g(this,o)===-1){this.add(o)}else{this.remove(o)}};e.toString=function(){return this.join(" ")};if(b.defineProperty){var l={get:i,enumerable:true,configurable:true};try{b.defineProperty(m,a,l)}catch(h){if(h.number===-2146823252){l.enumerable=false;b.defineProperty(m,a,l)}}}else{if(b[f].__defineGetter__){m.__defineGetter__(a,i)}}}(self))};
