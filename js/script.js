@@ -196,24 +196,24 @@ aelios = {
 
         pointerx = Math.round(divpixel.x - $('#marker').offset().left);
         pointery = Math.round(divpixel.y - $('#marker').offset().top);
-        $('#pointer').animate({left:pointerx,top:pointery},1500);
+        $('#pointer').animate({left:pointerx,top:pointery},400);
 
-        p1 = {x:$('#marker').width()/2,y:$('#marker').height()/2};
-        //angle calculations
-        var direction = {};
-        direction.x =  (pointerx <= $('#marker').width() / 2) ? -1 : 1 ;
-        direction.y =  (pointery <= $('#marker').height() / 2) ? -1 : 1 ;
-        p2 = {x : pointerx * direction.x,y:pointery * direction.y};
-        p2 = {x : pointerx,y:pointery};
-        var angle = (2 * Math.atan2(p2.y - p1.y, p2.x - p1.y)) * 180 / Math.PI ;
-        
-        if(angle <= 0){
-            angle = angle + 360;
+        //angle calculations taken straight from http://beradrian.wordpress.com/2009/03/23/calculating-the-angle-between-two-points-on-a-circle/
+        center = {x:$('#marker').width()/2,y:$('#marker').height()/2};
+        p1 = {x : pointerx,y:pointery};
+		radius = Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
+                         + Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y));
+		p0 = {x: center.x, y: center.y - radius};
+
+        angle = 2 * Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+        distanceAngle = Math.abs(aelios.o.pointerPrevAngle - angle);
+        if(distanceAngle > 180){
+            angle = aelios.o.pointerPrevAngle - (360 - distanceAngle);
         }
-        if(angle >= 360){
-            angle = angle - 360;
-        }
-        console.log(angle,aelios.o.pointerPrevAngle);
+        console.log(angle,aelios.o.pointerPrevAngle,distanceAngle);
+
+        //debug shit (dot)
+//        $('#dot').css({left:pointerx,top:pointery});
         $('#pointer')[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
         aelios.o.pointerPrevAngle = angle;
     },

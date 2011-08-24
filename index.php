@@ -38,6 +38,7 @@
     </div>
     <div id="marker">
         <div id="pointer"></div>
+        <div id="dot"></div>
         <div id="rotate"></div>
         <canvas id="nightCanvas" width="364" height="364"></canvas>
         <canvas id="dayLightCanvas" width="364" height="364"></canvas>

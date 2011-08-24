@@ -43,6 +43,29 @@ body {
     -webkit-transform-origin:50% 50%;
 	-webkit-transform:rotateZ(0rad);
 }
+/* debug crosshair lines*/
+/*
+#rotate::before{
+    content: "";
+    width:100%;
+    position: absolute;
+    height: 1px;
+    left:0;
+    top:50%;
+    background: #00ff00;
+    margin-top:-1px;
+}
+#rotate::after{
+    content: "";
+    height:100%;
+    position: absolute;
+    width: 1px;
+    left:50%;
+    top:0;
+    background: #00ff00;
+    margin-left:-1px;
+}
+*/
 #glass{
     width: 160px;
     height: 160px;
@@ -60,20 +83,33 @@ body {
 }
 #pointer{
     position: absolute;
-    right:90px;
-    top:183px;
-    background: url(../img/pointer.png) 0 0 no-repeat;
-    height:33px;
-    width:120px;
-    margin-left: -14px;
-    margin-top: -16px;
-    -webkit-transition:-webkit-transform 1000ms ease-in-out;
-    -moz-transition:-moz-transform 1000ms ease-in-out;
-    transition:transform 1000ms ease-in-out;
+    left:200px;
+    top:80px;
+    background: url(../img/pointer0.png) 0 0 no-repeat;
+    height:123px;
+    width:38px;
+    margin-left: -20px;
+    margin-top: -102px;
+    -webkit-transition:-webkit-transform 500ms ease-in-out;
+    -moz-transition:-moz-transform 500ms ease-in-out;
+    transition:transform 500ms ease-in-out;
 
     -webkit-transform:rotateZ(0deg);
-    -webkit-transform-origin: 10.5% 50%;
+    -webkit-transform-origin: 50% 82.1%;
 }
+/*debug dot*/
+/*
+#dot{
+    position: absolute;
+    width:4px;
+    height: 4px;
+    border-radius: 4px;
+    background: #ff0000;
+    left:0;top:0;
+    margin-left:-2px;
+    margin-top: -2px;
+}
+*/
 .drag #pointer{
     /*-webkit-transform:rotate(90deg) translateZ(0);*/
     /*width: 40px;*/
