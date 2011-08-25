@@ -302,7 +302,7 @@ aelios = {
         context = canvas.getContext("2d");
         context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
         context.beginPath();
-        context.lineWidth = 44;
+        context.lineWidth = 48;
         centerX = centerY = canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
         radius = canvas.offsetWidth / 2 - context.lineWidth/2;

@@ -41,7 +41,9 @@
             <div id="pointer"></div>
         </div>
 <!--        <div id="dot"></div>-->
-        <div id="rotate"></div>
+        <div id="rotate">
+            <div id="rotateInner"></div>
+        </div>
         <canvas id="nightCanvas" width="364" height="364"></canvas>
         <canvas id="dayLightCanvas" width="364" height="364"></canvas>
         <div id="glass"></div>
