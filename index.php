@@ -14,7 +14,8 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <!--    <script type="text/javascript" src="../live.js"></script>-->
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
-    <script type="text/javascript" src="js/jquery.transform.js"></script>
+<!--    <script type="text/javascript" src="js/jquery.transform.js"></script>-->
+    <script type="text/javascript" src="js/audioManager.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript" src="js/rotator.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
@@ -61,5 +62,7 @@
     <div id="mylocation"></div>
     <div id="search"></div>
 </div>
+<audio src="sounds/click.wav" id="clickSound"/>
+<audio src="sounds/btn.wav" id="btnSound"/>
 </body>
 </html>

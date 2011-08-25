@@ -17,12 +17,13 @@ var zodiac = {
 	controller: null,
 	angle: 0,
 	startAngle: 0,
-    slicesCount : 8,
+    slicesCount : 4,
     stepsCount : 48,
-    slices: Math.PI/ 4,	// 8 slices
+    slices: Math.PI/ 2,	// 8 slices
     steps: Math.PI/ 24,	// 48 steps
     track_position : false,
-
+    curStep : 0,
+    
 	handleEvent: function (e) {
         
         switch(e.type){
@@ -75,7 +76,12 @@ var zodiac = {
 
 	rotateMove: function(e,evt) {
         if(!this.track_position) {return false};
-        console.log(this.getSegment('steps'));
+
+        if(zodiac.curStep != this.getSegment('steps')){
+            CAAT.AudioManager.play('click');
+        }
+        zodiac.curStep = this.getSegment('steps');
+        
 		var dx = e.x - this.originX;
 		var dy = e.y - this.originY;
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
@@ -91,6 +97,8 @@ var zodiac = {
             
 			this.el[0].style.webkitTransitionDuration = '550ms';
 			this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
+            CAAT.AudioManager.play('click');
+            setTimeout("CAAT.AudioManager.play('click')",250);
 		}
 	},
     getSegment: function(segment) {

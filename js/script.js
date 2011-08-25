@@ -15,7 +15,9 @@ aelios = {
         ,curDeg : {start:367,end:1080}
         ,degOffset : 90 //deg to start from bottom center
         ,titleWidth : 150,
-        pointerPrevAngle : 0
+        pointerPrevAngle : 0,
+        cityAjaxTimeout : 0,
+        curLoc : {Oa:0,Pa:0}
 
     },
     init : function(){
@@ -26,6 +28,11 @@ aelios = {
         this.o.$pointerCont = $('#pointerCont');
         this.o.$pointer = $('#pointer');
         this.o.$template= $('#template');
+
+        //set Sounds - using 
+        CAAT.AudioManager.initialize(15);
+        CAAT.AudioManager.addAudioFromDomNode('click', document.querySelector('#clickSound'));
+        CAAT.AudioManager.addAudioFromDomNode('btn', document.querySelector('#btnSound'));
 
         //create a dummy div to animate canvas with jquery off of it
         $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
@@ -48,7 +55,7 @@ aelios = {
             zoom: 6,
             center: myLatlng,
             mapTypeId: google.maps.MapTypeId.HYBRID,
-            navigationControl: true,
+            disableDefaultUI: true,
             navigationControlOptions: {
                 style:
                         google.maps.NavigationControlStyle.SMALL
@@ -64,6 +71,7 @@ aelios = {
     bindMapEvents : function(map){
         google.maps.event.addListener(map, 'dragend', function() {
             aelios.updateCurrentLocation(map.getCenter());
+            window.clearInterval(aelios.o.interval);
         });
         google.maps.event.addListener(map, 'drag', function() {
             aelios.animatePointer();
@@ -79,10 +87,11 @@ aelios = {
         google.maps.event.addListener(map, 'dragstart', aelios.dragstarted);
         google.maps.event.addListener(map, 'tilesloaded', function() {
             if(aelios.o.mapLoaded) return false;
-            aelios.o.mapLoaded = true;
             aelios.getBoundingBox();
+            aelios.o.mapLoaded = true;
         });
         $('#mylocation').bind('click',function(){
+            CAAT.AudioManager.play('btn');
             navigator.geolocation.getCurrentPosition(function(data){
                 var myLatlng = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
                 map.setOptions({
@@ -114,6 +123,10 @@ aelios = {
         var padding = $('#boundingBox').width();
         var northeast = prj.fromContainerPixelToLatLng({x:container.offset().left + padding,y:container.offset().top});
         var southwest = prj.fromContainerPixelToLatLng({x:container.offset().left,y:container.offset().top + padding});
+        //initial map location finder
+        if(!aelios.o.mapLoaded){
+            aelios.updateCurrentLocation(map.getCenter());
+        }
         return [Math.round(northeast.Oa*100)/100,Math.round(northeast.Pa*100)/100,Math.round(southwest.Oa*100)/100,Math.round(southwest.Pa*100)/100];
     },
     updateCurrentLocation : function(curLoc,stilldragging){
@@ -124,13 +137,13 @@ aelios = {
             document.querySelector('body').classList.add('offline');
         }
         
-        curLoc = curLoc || map.getCenter();
+        aelios.o.curLoc = curLoc || map.getCenter();
         $('#loader').fadeIn();
         //set timeout to use geonames results instead of googles geocoding (much more reliable)
-        var timeout = 1000,t0;
+        var timeout = 1000;
         if (geocoder) {
             //get geodocing data from google
-            var latlng = curLoc;
+            var latlng = aelios.o.curLoc;
               geocoder.geocode({'latLng': latlng}, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     country = results[results.length-1].formatted_address.split(',')[0];
@@ -139,9 +152,13 @@ aelios = {
                     place = 'Somewhere...';
                     country = 'World';
                 }
-                t0 = window.setTimeout(function(){
+                aelios.o.cityAjaxTimeout = window.setTimeout(function(){
+                    //prevent race condition
+                    if(!aelios.o.$template.is('.drag')){
+                        return;
+                    }
                     $('#location').html(place);
-                    $('#country').html(country).css('width','');
+//                    $('#country').html(country).css('width','');
                     aelios.o.titleWidth = $('#title').find('.titleCont').width();
                     $('#template').removeClass('drag');
                     aelios.animatePointer();
@@ -154,8 +171,8 @@ aelios = {
             //cancel the rest of this function if function was called on mouse move event
             if(stilldragging) return false;
             //get bset matched city name and location from geonames
-            var lat = curLoc.Oa;
-            var lng = curLoc.Pa;
+            var lat = aelios.o.curLoc.Oa;
+            var lng = aelios.o.curLoc.Pa;
             var bounding = aelios.getBoundingBox();
             citiesAjax = $.getJSON("http://api.geonames.org/citiesJSON?callback=?",
                     {
@@ -168,9 +185,10 @@ aelios = {
                         timeout : 200
                     },function(data){
                         if(data.geonames && data.geonames.length > 0){
-                            window.clearTimeout(t0);
+                            window.clearTimeout(aelios.o.cityAjaxTimeout);
+                            delete aelios.o.cityAjaxTimeout;
                             $('#location').html(data.geonames[0].name);
-                            $('#country').html(country).css('width','');
+//                            $('#country').html(country).css('width','');
                             $('#template').removeClass('drag');
                             var latlng = new google.maps.LatLng(data.geonames[0].lat, data.geonames[0].lng);
                             aelios.animatePointer(latlng);
@@ -206,6 +224,7 @@ aelios = {
         $marker = aelios.o.$pointerCont;
         $pointer = aelios.o.$pointer;
         marker_offset = 15;
+        
         if(!aelios.o.$template.is('.drag')){
             aelios.o.pointerPrevLatLng = 0;
         }
@@ -270,6 +289,13 @@ aelios = {
     },
     dragstarted : function(){
         $('#template').addClass('drag');
+        aelios.o.interval = window.setInterval(function(){
+            if(map.getCenter().Oa == aelios.o.curLoc.Oa && map.getCenter().Pa == aelios.o.curLoc.Pa){
+                //didn't move while dragging, no need to update location
+            }else{
+                aelios.updateCurrentLocation(map.getCenter());
+            }
+        },1000);
     },
     updateLightHours : function(beginTime,endTime) {
         var beginTime = beginTime.split(':');
@@ -322,6 +348,7 @@ aelios = {
         }
     },
     search : function(){
+        CAAT.AudioManager.play('btn');
         $('.titleCont').animate({width:300,height:30,marginTop:15},{
             duration:200
         },{
