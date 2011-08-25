@@ -89,6 +89,9 @@ aelios = {
             if(aelios.o.mapLoaded) return false;
             aelios.getBoundingBox();
             aelios.o.mapLoaded = true;
+            window.setTimeout(function(){
+                aelios.updateCurrentLocation(map.getCenter());
+            },1000);
         });
         $('#mylocation').bind('click',function(){
             CAAT.AudioManager.play('btn');
@@ -158,7 +161,7 @@ aelios = {
                         return;
                     }
                     $('#location').html(place);
-//                    $('#country').html(country).css('width','');
+                    $('#country').html(country);
                     aelios.o.titleWidth = $('#title').find('.titleCont').width();
                     $('#template').removeClass('drag');
                     aelios.animatePointer();
@@ -188,7 +191,7 @@ aelios = {
                             window.clearTimeout(aelios.o.cityAjaxTimeout);
                             delete aelios.o.cityAjaxTimeout;
                             $('#location').html(data.geonames[0].name);
-//                            $('#country').html(country).css('width','');
+                            $('#country').html(country);
                             $('#template').removeClass('drag');
                             var latlng = new google.maps.LatLng(data.geonames[0].lat, data.geonames[0].lng);
                             aelios.animatePointer(latlng);

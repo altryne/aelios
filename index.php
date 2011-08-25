@@ -62,7 +62,7 @@
     <div id="mylocation"></div>
     <div id="search"></div>
 </div>
-<audio src="sounds/click.wav" id="clickSound"/>
+<audio src="sounds/click2.wav" id="clickSound"/>
 <audio src="sounds/btn.wav" id="btnSound"/>
 </body>
 </html>
