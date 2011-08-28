@@ -23,6 +23,8 @@ var zodiac = {
     steps: Math.PI/ 24,	// 48 steps
     track_position : false,
     curStep : 0,
+    initialShutter : 26,
+    shutterDirection : -1,
     
 	handleEvent: function (e) {
         
@@ -47,9 +49,10 @@ var zodiac = {
         }
 	},
 
-	init: function(controller,el) {
+	init: function(controller,el,shutter) {
 		this.el = el;
 		this.controller = controller;
+        this.shutter = shutter;
         this.width      = this.controller.width() / 2;
         this.height     = this.controller.height() / 2;
         //center points
@@ -71,7 +74,10 @@ var zodiac = {
 		var startX = e.x - this.originX;
 		var startY = e.y - this.originY;
 		this.startAngle = Math.atan2(startY, startX) - this.angle;
+		this.startStep = 0;
 
+        this.shutter.css('display','block');
+        zodiac.initialShutter = 25;
 	},
 
 	rotateMove: function(e,evt) {
@@ -80,21 +86,44 @@ var zodiac = {
         if(zodiac.curStep != this.getSegment('steps')){
             CAAT.AudioManager.play('click');
         }
+        if(zodiac.initialShutter == -10 || zodiac.initialShutter == 26){
+            zodiac.shutterDirection *= -1;
+        }
+        zodiac.initialShutter += zodiac.shutterDirection;
+        if(zodiac.initialShutter >= 0){
+            zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
+        }
+
+//        zodiac.shutter.find('.shutterInner').css('backgroundPosition',zodiac.initialShutter);
+
+//        console.log(zodiac.initialShutter);
         zodiac.curStep = this.getSegment('steps');
-        
+
+
 		var dx = e.x - this.originX;
 		var dy = e.y - this.originY;
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
-
+       
 		this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
 	},
-
+    diffangle : function(angle,dest){
+      diffangle = (angle - dest) + 180;
+      diffangle = (diffangle / 360.0);
+      diffangle = ((diffangle - Math.floor( diffangle )) * 360.0) - 180;
+//      console.log(diffangle);
+      return diffangle;
+    },
 	rotateStop: function(e) {
         this.track_position = false;
-        
+
+        this.shutter.find('.shutterInner').animate({'rotate':'26deg'},250,function(){
+                zodiac.shutter.hide();
+        });
+        zodiac.initialShutter = 25;
+        zodiac.shutterDirection = -1;
+        zodiac.startStep = zodiac.curStep;
 		if( this.angle%this.slices ) {
 			this.angle = Math.round(this.angle/this.slices) * this.slices;
-            
 			this.el[0].style.webkitTransitionDuration = '550ms';
 			this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
             CAAT.AudioManager.play('click');

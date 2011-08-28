@@ -44,7 +44,7 @@ aelios = {
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'dayLightCanvas');
         })
 
-        zodiac.init($('#marker'),$('#rotate'));
+        zodiac.init($('#marker'),$('#rotate'),$('#shutterCont'));
         //initiate google map
         this.createMap();
     },
@@ -331,7 +331,7 @@ aelios = {
         context = canvas.getContext("2d");
         context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
         context.beginPath();
-        context.lineWidth = 48;
+        context.lineWidth = 43;
         centerX = centerY = canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
         radius = canvas.offsetWidth / 2 - context.lineWidth/2;
@@ -341,9 +341,7 @@ aelios = {
         counterclockwise = false;
 
         if(canvasElm == 'nightCanvas'){
-            context.arc(centerX, centerY, radius, 0 , Math.PI*2, true);
-            context.strokeStyle = context.createPattern(aelios.o.img[0], 'repeat')
-            context.stroke();
+            
         }else{
             context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
             context.strokeStyle = "white"; // line color

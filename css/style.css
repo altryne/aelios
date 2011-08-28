@@ -13,7 +13,7 @@ body {
 	height: 100%
 }
 
-/*cool aelios marker*/
+/*cool aelios controller*/
 #marker{
 	height:400px;
 	width:400px;
@@ -31,30 +31,43 @@ body {
 	-webkit-box-shadow:0 0 45px #000;
 	-moz-box-shadow:0 0 45px #000;
 }
-#rotate{
+.layer,#marker::before,#marker::after,#days::after{
     width:100%;
     height: 100%;
-    background: url(../img/rim.png) 0 0 no-repeat;
-    background-size:100%;
+    left: 0;
+    top: 0;
     position: absolute;
-    left:0;
-    top:0;
-    
+}
+/*jilion topmost rim, and rotate highlight*/
+#marker::after{
+    content:"";
+    background: url(../img/jilionRim.png) 0 0 no-repeat;
+    z-index: 1500;
+}
+/*rotatbles*/
+#rotate{
+    background: url(../img/rotateRim.png) 0 0 no-repeat;
+    z-index: 1000;
     -webkit-transform-origin:50% 50%;
 	-webkit-transform:rotateZ(0rad);
 }
 #rotateInner{
-    width:250px;
-    height: 250px;
+    width:100%;
+    height: 100%;
     background: url(../img/rotating_inner.png) 0 0 no-repeat;
-    background-size:100%;
     position: absolute;
-    left:50%;
-    top:50%;
-    margin-left: -125px;
-    margin-top: -125px;
-
+    left:0;
+    top:0;
 }
+/*day mode*/
+#days{
+    background: url(../img/days_bg.png) 0 0 no-repeat;
+}
+#days::after{
+    background: url(../img/days_highlight.png) 0 0 no-repeat;
+    content:"";
+}
+
 /* debug crosshair lines*/
 /*
 #rotate::before{
@@ -79,19 +92,19 @@ body {
 }
 */
 #glass{
-width: 137px;
-height: 137px;
-border-radius: 160px;
-background: -webkit-linear-gradient(top,rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
-background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
-background: -webkit-gradient(linear, left top, left bottom, color-stop(70%,rgba(255, 255, 255, 0.3)), color-stop(100%,rgba(255,255,255,0)));
-background: -o-linear-gradient(top, rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
-background: linear-gradient(top, rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
-position: absolute;
-top: 107px;
-left: 50%;
-margin-left: -68px;
-box-shadow: 0px -10px 17px rgba(255,255,255,0.2);
+    width: 137px;
+    height: 137px;
+    border-radius: 160px;
+    background: -webkit-linear-gradient(top,rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
+    background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(70%,rgba(255, 255, 255, 0.3)), color-stop(100%,rgba(255,255,255,0)));
+    background: -o-linear-gradient(top, rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(top, rgba(255, 255, 255, 0.3) 50%,rgba(255, 255, 255, 0) 100%);
+    position: absolute;
+    top: 107px;
+    left: 50%;
+    margin-left: -68px;
+    box-shadow: 0px -10px 17px rgba(255,255,255,0.2);
 }
 #pointerCont{
     position: absolute;
@@ -354,6 +367,8 @@ body.offline #offline{
     background: linear-gradient(top, rgba(210, 210, 210, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 /*end search mode*/
+
+
 #dayLightCanvas,#nightCanvas{
     left:18px;
     top:18px;
@@ -366,28 +381,7 @@ body.offline #offline{
     width:180px;
     height: 180px;
 }
-#marker::before{
-    content:"";
-    background: url(../img/ring2.png) 0 0 no-repeat;
-    background-size:100% 100%;
-    position: absolute;
-    height: 364px;
-    width:364px;
-    left:18px;
-    top:18px;
-    z-index: 10;
-}
-#marker::after{
-    content:"";
-    background: url(../img/rimH.png) 0 0 no-repeat;
-    background-size:100% 100%;
-    position: absolute;
-    height: 398px;
-    width:398px;
-    left:0;
-    top:0;
-    z-index: 1500;
-}
+
 
 
 @-webkit-keyframes shake {
@@ -409,4 +403,111 @@ body.offline #offline{
 	-webkit-transform-origin:50% 50%;
 	-webkit-animation-iteration-count: 1;
 	-webkit-animation-timing-function: linear;
+}
+
+#shutterCont{
+    position: absolute;
+    width:100%;
+    height: 100%;
+    left:0;top:0;
+    z-index: 20;
+    border-radius: 400px;
+    z-index: 20;
+}
+.shutter{
+    width: 400px;height: 400px;
+    position: absolute;
+}
+
+
+.fix{
+    overflow: hidden;
+    height: 100%;
+    width:100%;
+    border-radius: 400px;
+
+}
+
+.shutterInner{
+    background: url(../img/shutter3.png) left top;
+    width: 94px;
+    height: 227px;
+    margin-left:289px;
+    margin-top: 117px;
+    -webkit-transform-origin:80% 80%;
+    -webkit-transform:rotate(26deg);
+}
+
+/*shutter pieces positions*/
+.shutter1{
+    -webkit-transform:rotate(0deg);
+}
+.shutter2{
+    -webkit-transform:rotate(15deg);
+}
+.shutter3{
+    -webkit-transform:rotate(30deg);
+}
+.shutter4{
+    -webkit-transform:rotate(45deg);
+}
+.shutter5{
+    -webkit-transform:rotate(60deg);
+}
+.shutter6{
+    -webkit-transform:rotate(75deg);
+}
+.shutter7{
+    -webkit-transform:rotate(90deg);
+}
+.shutter8{
+    -webkit-transform:rotate(105deg);
+}
+.shutter9{
+    -webkit-transform:rotate(120deg);
+}
+.shutter10{
+    -webkit-transform:rotate(135deg);
+}
+.shutter11{
+    -webkit-transform:rotate(150deg);
+}
+.shutter12{
+    -webkit-transform:rotate(165deg);
+}
+.shutter13{
+    -webkit-transform:rotate(180deg);
+}
+.shutter14{
+    -webkit-transform:rotate(195deg);
+}
+.shutter15{
+    -webkit-transform:rotate(210deg);
+}
+.shutter16{
+    -webkit-transform:rotate(225deg);
+}
+.shutter17{
+    -webkit-transform:rotate(240deg);
+}
+.shutter18{
+    -webkit-transform:rotate(255deg);
+}
+.shutter19{
+    -webkit-transform:rotate(270deg);
+}
+.shutter20{
+    -webkit-transform:rotate(285deg);
+}
+.shutter21{
+    -webkit-transform:rotate(300deg);
+}
+.shutter22{
+    -webkit-transform:rotate(315deg);
+}
+.shutter23{
+    -webkit-transform:rotate(330deg);
+}
+.shutter24{
+    -webkit-transform:rotate(345deg);
 }

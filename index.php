@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <!--    <script type="text/javascript" src="../live.js"></script>-->
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
-<!--    <script type="text/javascript" src="js/jquery.transform.js"></script>-->
+    <script type="text/javascript" src="js/jquery.transform.js"></script>
     <script type="text/javascript" src="js/audioManager.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript" src="js/rotator.js"></script>
@@ -38,15 +38,138 @@
         Cannot establish internet connection!
     </div>
     <div id="marker">
+        <div id="rotate" class="layer">
+        </div>
         <div id="pointerCont">
             <div id="pointer"></div>
         </div>
-<!--        <div id="dot"></div>-->
-        <div id="rotate">
-            <div id="rotateInner"></div>
+
+        <div id="shutterCont" style="display: none">
+            <div class="shutter shutter24">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter23">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter22">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter21">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter20">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter19">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter18">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter17">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter16">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter15">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter14">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter13">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter12">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter11">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter10">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter9">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter8">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter7">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter6">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter5">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter4">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter3">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter2">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
+            <div class="shutter shutter1">
+                <div class="fix">
+                    <div class="shutterInner"></div>
+                </div>
+            </div>
         </div>
-        <canvas id="nightCanvas" width="364" height="364"></canvas>
-        <canvas id="dayLightCanvas" width="364" height="364"></canvas>
+        <div id="days" class="layer">
+            <canvas id="nightCanvas" width="364" height="364"></canvas>
+            <canvas id="dayLightCanvas" width="364" height="364"></canvas>
+        </div>
         <div id="glass"></div>
         <div id="shadow"></div>
         <div id="boundingBox"></div>
@@ -62,7 +185,7 @@
     <div id="mylocation"></div>
     <div id="search"></div>
 </div>
-<audio src="sounds/click2.wav" id="clickSound"/>
-<audio src="sounds/btn.wav" id="btnSound"/>
+<audio src="sounds/click.wav" id="clickSound" preload="auto"></audio>
+<audio src="sounds/btn.wav" id="btnSound" preload="auto"></audio>
 </body>
 </html>
