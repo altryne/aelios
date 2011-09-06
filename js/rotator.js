@@ -104,7 +104,8 @@ var zodiac = {
 		var dy = e.y - this.originY;
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
        
-		this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
+//		this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
+        this.el.css('rotate',this.angle + 'rad');
 	},
     diffangle : function(angle,dest){
       diffangle = (angle - dest) + 180;
@@ -124,8 +125,9 @@ var zodiac = {
         zodiac.startStep = zodiac.curStep;
 		if( this.angle%this.slices ) {
 			this.angle = Math.round(this.angle/this.slices) * this.slices;
-			this.el[0].style.webkitTransitionDuration = '550ms';
-			this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
+//			this.el[0].style.webkitTransitionDuration = '550ms';
+//			this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
+            this.el.animate({'rotate':this.angle + 'rad'},550);
             CAAT.AudioManager.play('click');
             setTimeout("CAAT.AudioManager.play('click')",250);
 		}

@@ -17,7 +17,7 @@ aelios = {
         ,titleWidth : 150,
         pointerPrevAngle : 0,
         cityAjaxTimeout : 0,
-        curLoc : {Oa:0,Pa:0}
+        curLoc : {Qa:0,Pa:0}
 
     },
     init : function(){
@@ -43,7 +43,10 @@ aelios = {
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'nightCanvas');
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'dayLightCanvas');
         })
-
+        //set initial rotate states for each shutter piece
+        for(var j = 0;j < 24;j++){
+            this.o.$template.find('.shutter'+(j+1)).css('rotate',j * 15 + 'deg');
+        }
         zodiac.init($('#marker'),$('#rotate'),$('#shutterCont'));
         //initiate google map
         this.createMap();
@@ -126,11 +129,12 @@ aelios = {
         var padding = $('#boundingBox').width();
         var northeast = prj.fromContainerPixelToLatLng({x:container.offset().left + padding,y:container.offset().top});
         var southwest = prj.fromContainerPixelToLatLng({x:container.offset().left,y:container.offset().top + padding});
+
         //initial map location finder
         if(!aelios.o.mapLoaded){
             aelios.updateCurrentLocation(map.getCenter());
         }
-        return [Math.round(northeast.Oa*100)/100,Math.round(northeast.Pa*100)/100,Math.round(southwest.Oa*100)/100,Math.round(southwest.Pa*100)/100];
+        return [Math.round(northeast.lng()*100)/100,Math.round(northeast.lat()*100)/100,Math.round(southwest.lng()*100)/100,Math.round(southwest.lat()*100)/100];
     },
     updateCurrentLocation : function(curLoc,stilldragging){
 //        check online status
@@ -174,16 +178,18 @@ aelios = {
             //cancel the rest of this function if function was called on mouse move event
             if(stilldragging) return false;
             //get bset matched city name and location from geonames
-            var lat = aelios.o.curLoc.Oa;
-            var lng = aelios.o.curLoc.Pa;
+            var lat = aelios.o.curLoc.lng();
+            var lng = aelios.o.curLoc.lat();
+            
             var bounding = aelios.getBoundingBox();
+            
             citiesAjax = $.getJSON("http://api.geonames.org/citiesJSON?callback=?",
                     {
                         username: 'altryne',
-                        north : bounding[0],
-                        east : bounding[1],
-                        south : bounding[2],
-                        west : bounding[3],
+                        north : bounding[1],
+                        east : bounding[0],
+                        south : bounding[3],
+                        west : bounding[2],
                         maxRows :1,
                         timeout : 200
                     },function(data){
@@ -286,17 +292,18 @@ aelios = {
         }
         //debug shit (dot)
 //        $('#dot').css({left:pointerx,top:pointery});
-        $pointer[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
+//        $pointer[0].style.webkitTransform = 'rotateZ(' + angle + 'deg)';
+        $pointer.css('rotate',angle + 'deg');
         aelios.o.pointerPrevAngle = angle;
         aelios.o.pointerPrevLatLng = latlng;
     },
     dragstarted : function(){
         $('#template').addClass('drag');
         aelios.o.interval = window.setInterval(function(){
-            if(map.getCenter().Oa == aelios.o.curLoc.Oa && map.getCenter().Pa == aelios.o.curLoc.Pa){
+            if(map.getCenter().lng() == aelios.o.curLoc.lng() && map.getCenter().lat() == aelios.o.curLoc.lat()){
                 //didn't move while dragging, no need to update location
             }else{
-                aelios.updateCurrentLocation(map.getCenter());
+                //aelios.updateCurrentLocation(map.getCenter());
             }
         },1000);
     },
