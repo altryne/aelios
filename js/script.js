@@ -339,6 +339,7 @@ aelios = {
 
             }
         });
+        aelios.o.nowTime = parseInt($('#two').css('top'))
         var dir = (aelios.o.nowTime > nowTime) ? -1 : 1;
         var speed = 5;
 //        console.log(aelios.o.nowTime ,nowTime);
@@ -347,7 +348,7 @@ aelios = {
         }else{
             var duration  = (-nowTime + aelios.o.nowTime) * speed;
         }
-        $('#two').animate({
+        $('#two').stop().animate({
                 top : nowTime
             },
             {
