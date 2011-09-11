@@ -17,7 +17,8 @@ aelios = {
         ,titleWidth : 150,
         pointerPrevAngle : 0,
         cityAjaxTimeout : 0,
-        curLoc : {Qa:0,Pa:0}
+        curLoc : {Qa:0,Pa:0},
+        nowTime : 1147
 
     },
     init : function(){
@@ -36,13 +37,22 @@ aelios = {
 
         //create a dummy div to animate canvas with jquery off of it
         $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
+        $('<div id="two"/>').css({'display':'none','top':this.o.nowTime}).appendTo('body');
 
         //prevent canvas from premature painting, only paint on image load
         aelios.o.img = $('<img/>').attr('src','img/repeat.jpg').load(function(){
             //draw initial light stages on canvas
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'nightCanvas');
             aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'dayLightCanvas');
-        })
+
+        });
+        aelios.o.ptrn = $('<img/>').attr('src','img/ptrn.png').load(function(){
+            aelios.drawLight(
+                    0,
+                    aelios.nowTime,
+                    'timeCanvas'
+            );
+        });
         //set initial rotate states for each shutter piece
         for(var j = 0;j < 24;j++){
             this.o.$template.find('.shutter'+(j+1)).css('rotate',j * 15 + 'deg');
@@ -147,7 +157,7 @@ aelios = {
         aelios.o.curLoc = curLoc || map.getCenter();
         $('#loader').fadeIn();
         //set timeout to use geonames results instead of googles geocoding (much more reliable)
-        var timeout = 1000;
+        var timeout = 2000;
         if (geocoder) {
             //get geodocing data from google
             var latlng = aelios.o.curLoc;
@@ -178,8 +188,8 @@ aelios = {
             //cancel the rest of this function if function was called on mouse move event
             if(stilldragging) return false;
             //get bset matched city name and location from geonames
-            var lat = aelios.o.curLoc.lng();
-            var lng = aelios.o.curLoc.lat();
+            var lat = aelios.o.curLoc.lat();
+            var lng = aelios.o.curLoc.lng();
             
             var bounding = aelios.getBoundingBox();
             
@@ -221,7 +231,7 @@ aelios = {
                       day = new Date(_date.split('-').join('/'));
                       $('#time').html(data.time.split(' ')[1]);
                       //split datetime to time
-                      aelios.updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1]);
+                      aelios.updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1],data.time.split(' ')[1]);
                       $('#date').html(aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
                   }
               }
@@ -239,6 +249,7 @@ aelios = {
         }
 
         //three way,if new latlng,if old latlang not updated, if no latlng or default position
+        //the golder rule ;)
         if(latlng){
             $pointer.removeClass('noanim');
             divpixel = prj.fromLatLngToContainerPixel(latlng);
@@ -307,15 +318,16 @@ aelios = {
             }
         },1000);
     },
-    updateLightHours : function(beginTime,endTime) {
-        var beginTime = beginTime.split(':');
-        var beginTimeInMinutes = parseInt(beginTime[0], 10) * 60 + parseInt(beginTime[1], 10);
-        var endTime = endTime.split(':');
-        var endTimeInMinutes = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10);
+    updateLightHours : function(beginTime,endTime,nowTime) {
+
+        beginTime = aelios.parseDateTime(beginTime);
+        endTime = aelios.parseDateTime(endTime);
+        nowTime = aelios.parseDateTime(nowTime);
+
         //piggyBack on jquery's animate, to animate canvas properties
         $('#one').animate({
-            left:beginTimeInMinutes,
-            top:endTimeInMinutes
+            left:beginTime,
+            top:endTime
             },{
             duration : 600,
             easing : 'easeOutBack',
@@ -323,14 +335,53 @@ aelios = {
                 aelios.drawLight(
                     parseInt($(this).css('left')),
                     parseInt($(this).css('top'))
-                )
+                );
+
             }
-        })
+        });
+        var dir = (aelios.o.nowTime > nowTime) ? -1 : 1;
+        var speed = 5;
+//        console.log(aelios.o.nowTime ,nowTime);
+        if(dir == -1){
+            var duration  = -aelios.o.nowTime * speed;
+        }else{
+            var duration  = (-nowTime + aelios.o.nowTime) * speed;
+        }
+        $('#two').animate({
+                top : nowTime
+            },
+            {
+                duration: Math.abs(duration),
+                easing: 'easeOutQuad',
+                step : function (){
+                    var time = parseInt($(this).css('top'));
+                    aelios.drawLight(
+                        0,
+                        time,
+                        'timeCanvas'
+                    );
+                    $('#hand').css('rotate',parseInt(time * .25,10) + 'deg');
+                    if(parseInt(time * .25,10) < 50){
+                        aelios.o.$template.addClass('hideRight');
+                    }else if(parseInt(time * .25,10) > 290){
+                        aelios.o.$template.addClass('hideLeft');
+                    }else{
+                        aelios.o.$template.removeClass('hideRight hideLeft');
+                    }
+                },
+                complete: function (){
+                    aelios.o.nowTime = parseInt($(this).css('top'));
+                }
+            })
+    },
+    parseDateTime : function(time){
+        var time = time.split(':');
+        return parseInt(time[0], 10) * 60 + parseInt(time[1], 10);
     },
     drawLight : function(beginDeg,endDeg,canvasElm){
         canvasElm = canvasElm || 'dayLightCanvas';
         //transform minutes to degrees each minute == 0.25 deg
-        //probobly there's a smarter way then converting from time to minutes to degrees to radians
+        //probably there's a smarter way then converting from time to minutes to degrees to radians
         beginDeg =  parseInt(beginDeg * .25,10) - this.o.degOffset;
         endDeg = parseInt(endDeg * .25,10) - this.o.degOffset;
 
@@ -349,6 +400,12 @@ aelios = {
 
         if(canvasElm == 'nightCanvas'){
             
+        }else if(canvasElm == 'timeCanvas'){
+            context.lineWidth = 40;
+            context.arc(centerX, centerY, radius, startingAngle, endingAngle, true);
+            ptrn = context.createPattern(aelios.o.ptrn[0],'repeat');
+            context.strokeStyle = ptrn; // line color
+            context.stroke();
         }else{
             context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
             context.strokeStyle = "white"; // line color

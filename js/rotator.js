@@ -25,6 +25,7 @@ var zodiac = {
     curStep : 0,
     initialShutter : 26,
     shutterDirection : -1,
+    chokeFactor : 0,
     
 	handleEvent: function (e) {
         
@@ -76,7 +77,7 @@ var zodiac = {
 		this.startAngle = Math.atan2(startY, startX) - this.angle;
 		this.startStep = 0;
 
-        this.shutter.css('display','block');
+        zodiac.starDir = ((parseFloat(this.el.css('rotate')) * 180 / Math.PI) > 80)? -1 : 1;
         zodiac.initialShutter = 25;
 	},
 
@@ -86,37 +87,55 @@ var zodiac = {
         if(zodiac.curStep != this.getSegment('steps')){
             CAAT.AudioManager.play('click');
         }
-        if(zodiac.initialShutter == -10 || zodiac.initialShutter == 26){
-            zodiac.shutterDirection *= -1;
-        }
-        zodiac.initialShutter += zodiac.shutterDirection;
-        if(zodiac.initialShutter >= 0){
-            zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
-        }
+
 
 //        zodiac.shutter.find('.shutterInner').css('backgroundPosition',zodiac.initialShutter);
 
-//        console.log(zodiac.initialShutter);
+
         zodiac.curStep = this.getSegment('steps');
 
 
 		var dx = e.x - this.originX;
 		var dy = e.y - this.originY;
+
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
-       
-//		this.el[0].style.webkitTransform = 'rotateZ(' + this.angle + 'rad)';
-        this.el.css('rotate',this.angle + 'rad');
+
+        this.angleDeg = this.angle * 180 / Math.PI;
+        this.prevangleDeg = parseFloat(this.el.css('rotate')) * 180 / Math.PI;
+
+        
+        if(this.prevangleDeg < this.angleDeg){
+            this.scrollDir = this.starDir;
+        }
+
+        if(this.prevangleDeg > this.angleDeg){
+            this.scrollDir = -1 * this.starDir
+        }
+        //prevent rotating more then nessesary
+        if(this.angleDeg > -20 && this.angleDeg < 120){
+            this.el.css('rotate',this.angle + 'rad');
+        }else{
+            this.chokeFactor += 0.01;
+            this.angle = parseFloat(this.el.css('rotate'));
+        }
+
+        if(this.angleDeg > 0 && this.angleDeg <90){
+            this.shutter.css('display','block');
+            if(zodiac.initialShutter == -5 || zodiac.initialShutter == 26){
+            zodiac.shutterDirection *= -1;
+            }
+
+            zodiac.initialShutter += zodiac.shutterDirection * this.scrollDir;
+            if(zodiac.initialShutter >= 0){
+                zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
+            }
+        }else{
+            this.shutter.css('display','none');
+        }
 	},
-    diffangle : function(angle,dest){
-      diffangle = (angle - dest) + 180;
-      diffangle = (diffangle / 360.0);
-      diffangle = ((diffangle - Math.floor( diffangle )) * 360.0) - 180;
-//      console.log(diffangle);
-      return diffangle;
-    },
 	rotateStop: function(e) {
         this.track_position = false;
-
+        zodiac.chokeFactor = 0;
         this.shutter.find('.shutterInner').animate({'rotate':'26deg'},250,function(){
                 zodiac.shutter.hide();
         });
