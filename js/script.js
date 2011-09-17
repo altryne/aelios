@@ -14,12 +14,28 @@ aelios = {
         ,months : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         ,curDeg : {start:367,end:1080}
         ,degOffset : 90 //deg to start from bottom center
-        ,titleWidth : 150,
-        pointerPrevAngle : 0,
-        cityAjaxTimeout : 0,
-        curLoc : {Qa:0,Pa:0},
-        nowTime : 1147
+        ,pointerPrevAngle : 0
+        ,cityAjaxTimeout : 0
+        ,nowTime : 735
 
+    },
+    /* constantly updated values*/
+    u : {
+        curLoc : {},
+        lat : 51.5085932,
+        lng:-0.1247547,
+        titleWidth : 150,
+        place : 'Somewhere...',
+        country : 'World',
+        timeString : '12:15',
+        dateString : '',
+        time : 735,
+        riseTime : 375,
+        setTime : 1110,
+        dayOrWeek : 'day',
+        pointerCss : '',
+        handDeg : 'rotate(180deg)',
+        titleState : ''
     },
     init : function(){
         var map;
@@ -29,44 +45,67 @@ aelios = {
         this.o.$pointerCont = $('#pointerCont');
         this.o.$pointer = $('#pointer');
         this.o.$template= $('#template');
+        
+        if(aelios.getState()){
+            $.extend(aelios.u,aelios.getState());
+        }else{
+            aelios.u.curLoc = new google.maps.LatLng(aelios.u.lat, aelios.u.lng);
+        }
+
 
         //set Sounds - using 
         CAAT.AudioManager.initialize(15);
         CAAT.AudioManager.addAudioFromDomNode('click', document.querySelector('#clickSound'));
         CAAT.AudioManager.addAudioFromDomNode('btn', document.querySelector('#btnSound'));
-
+        //update values from localstorage / new values
+        
+        $('#country').html(this.u.country);
+        $('#location').html(this.u.place);
+        $('#date').html(this.u.dateString);
+        $('#time').html(this.u.timeString);
+        this.updateTitles(this.u.time);
+        
         //create a dummy div to animate canvas with jquery off of it
-        $('<div id="one"/>').css({'display':'none','top':this.o.curDeg.end,'left':this.o.curDeg.start}).appendTo('body');
-        $('<div id="two"/>').css({'display':'none','top':this.o.nowTime}).appendTo('body');
+        $('<div id="one"/>').css({'display':'none','top':this.u.setTime,'left':this.u.riseTime}).appendTo('body');
+        $('<div id="two"/>').css({'display':'none','top':this.u.time}).appendTo('body');
 
+        //draw initial light stages on canvas
+        aelios.drawLight(this.u.riseTime,this.u.setTime,'dayLightCanvas');
+        
         //prevent canvas from premature painting, only paint on image load
-        aelios.o.img = $('<img/>').attr('src','img/repeat.jpg').load(function(){
-            //draw initial light stages on canvas
-            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'nightCanvas');
-            aelios.drawLight(aelios.o.curDeg.start,aelios.o.curDeg.end,'dayLightCanvas');
-
-        });
         aelios.o.ptrn = $('<img/>').attr('src','img/ptrn.png').load(function(){
             aelios.drawLight(
                     0,
-                    aelios.nowTime,
+                    aelios.u.time,
                     'timeCanvas'
             );
         });
+        $('#hand').css('rotate',this.u.handDeg);
         //set initial rotate states for each shutter piece
         for(var j = 0;j < 24;j++){
             this.o.$template.find('.shutter'+(j+1)).css('rotate',j * 15 + 'deg');
         }
         zodiac.init($('#marker'),$('#rotate'),$('#shutterCont'));
+
+        //prepare canvas with hole in middle
+        $('#overlayCanvas').attr('height',2000);
+        $('#overlayCanvas').attr('width',1500);
+        var can = $('#overlayCanvas');
+        ctx = can[0].getContext('2d');
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0,0,can.width(),can.height());
+//        ctx.clearRect(0,0,150,150);
+        ctx.clearRect(can.width() / 2 - 100,can.height() / 2 - 100,200, 250);
+
+        $('#overlay').css('background', 'url('+can[0].toDataURL()+')');
         //initiate google map
         this.createMap();
     },
     createMap : function(){
         //todo:search localstorage for previously set latlng
-        var myLatlng = new google.maps.LatLng(51.5085932, -0.1247547);
         var myOptions = {
             zoom: 6,
-            center: myLatlng,
+            center: aelios.u.curLoc,
             mapTypeId: google.maps.MapTypeId.HYBRID,
             disableDefaultUI: true,
             navigationControlOptions: {
@@ -84,6 +123,8 @@ aelios = {
     bindMapEvents : function(map){
         google.maps.event.addListener(map, 'dragend', function() {
             aelios.updateCurrentLocation(map.getCenter());
+            aelios.u.pointerCss = aelios.o.$pointer.attr('style');
+            aelios.setState();
             window.clearInterval(aelios.o.interval);
         });
         google.maps.event.addListener(map, 'drag', function() {
@@ -107,7 +148,6 @@ aelios = {
             },1000);
         });
         $('#mylocation').bind('click',function(){
-            CAAT.AudioManager.play('btn');
             navigator.geolocation.getCurrentPosition(function(data){
                 var myLatlng = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
                 map.setOptions({
@@ -118,9 +158,16 @@ aelios = {
             });
         });
         $('#search').bind('click',aelios.search);
+        $('#search,#mylocation').bind('mousedown',function(){
+            CAAT.AudioManager.play('btn');
+        });
+
         $('#searchInput').bind('keydown',function(e){
             if(e.keyCode == 13){
                 aelios.findLocation($(this).prop('value'));
+            }
+            if(e.keyCode == 27){
+                aelios.searchOff();
             }
         });
         $('#overlay').bind('click',aelios.searchOff);
@@ -153,43 +200,44 @@ aelios = {
         }else{
             document.querySelector('body').classList.add('offline');
         }
-        
-        aelios.o.curLoc = curLoc || map.getCenter();
+        aelios.u.curLoc = curLoc || map.getCenter();
         $('#loader').fadeIn();
         //set timeout to use geonames results instead of googles geocoding (much more reliable)
         var timeout = 2000;
         if (geocoder) {
             //get geodocing data from google
-            var latlng = aelios.o.curLoc;
+            var latlng = aelios.u.curLoc;
               geocoder.geocode({'latLng': latlng}, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
-                    country = results[results.length-1].formatted_address.split(',')[0];
-                    place = 'Somewhere...';
+                    aelios.u.country = results[results.length-1].formatted_address.split(',')[0];
+                    aelios.u.place = 'Somewhere...';
                 } else {
-                    place = 'Somewhere...';
-                    country = 'World';
+                    aelios.u.country = 'World';
+                    aelios.u.place = 'Somewhere...';
                 }
                 aelios.o.cityAjaxTimeout = window.setTimeout(function(){
                     //prevent race condition
                     if(!aelios.o.$template.is('.drag')){
                         return;
                     }
-                    $('#location').html(place);
-                    $('#country').html(country);
-                    aelios.o.titleWidth = $('#title').find('.titleCont').width();
+                    $('#location').html(aelios.u.place);
+                    $('#country').html(aelios.u.country);
+
+                    aelios.u.titleWidth = $('#title').find('.titleCont').width();
                     $('#template').removeClass('drag');
                     aelios.animatePointer();
                     //abort cities ajax request if ran out of time
                     if(citiesAjax) {
                         citiesAjax.abort();
                     }
+                    aelios.setState();
                 },timeout);
-              });
+
             //cancel the rest of this function if function was called on mouse move event
             if(stilldragging) return false;
             //get bset matched city name and location from geonames
-            var lat = aelios.o.curLoc.lat();
-            var lng = aelios.o.curLoc.lng();
+            var lat = aelios.u.curLoc.lat();
+            var lng = aelios.u.curLoc.lng();
             
             var bounding = aelios.getBoundingBox();
             
@@ -201,13 +249,14 @@ aelios = {
                         south : bounding[3],
                         west : bounding[2],
                         maxRows :1,
-                        timeout : 200
+                        timeout : 900
                     },function(data){
                         if(data.geonames && data.geonames.length > 0){
                             window.clearTimeout(aelios.o.cityAjaxTimeout);
                             delete aelios.o.cityAjaxTimeout;
-                            $('#location').html(data.geonames[0].name);
-                            $('#country').html(country);
+                            aelios.u.place = data.geonames[0].name;
+                            $('#location').html(aelios.u.place);
+                            $('#country').html(aelios.u.country);
                             $('#template').removeClass('drag');
                             var latlng = new google.maps.LatLng(data.geonames[0].lat, data.geonames[0].lng);
                             aelios.animatePointer(latlng);
@@ -215,6 +264,7 @@ aelios = {
                             //set pointer to default location
                             aelios.animatePointer();
                         }
+                        aelios.setState();
                     }
             );
             //get sunrise and sunset data from geonames
@@ -229,13 +279,27 @@ aelios = {
                   if (data && data.time) {
                       var _date = data.time.split(' ')[0];
                       day = new Date(_date.split('-').join('/'));
-                      $('#time').html(data.time.split(' ')[1]);
+
+                      aelios.u.riseTime = aelios.parseDateTime(data.sunrise.split(' ')[1]);
+                      aelios.u.setTime = aelios.parseDateTime(data.sunset.split(' ')[1]);
+                      aelios.u.time = aelios.parseDateTime(data.time.split(' ')[1]);
+
+                      aelios.u.dateString = aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear()
+                      aelios.u.timeString = data.time.split(' ')[1];
+
                       //split datetime to time
-                      aelios.updateLightHours(data.sunrise.split(' ')[1],data.sunset.split(' ')[1],data.time.split(' ')[1]);
-                      $('#date').html(aelios.o.dayOfWeek[day.getDay()] + ', ' + aelios.o.months[day.getMonth()] + ' ' + day.getDate() + ', ' + day.getFullYear());
+                      aelios.updateLightHours(aelios.u.riseTime,aelios.u.setTime,aelios.u.time);
+
+                      //update html
+                      $('#date').html(aelios.u.dateString);
+                      $('#time').html(aelios.u.timeString);
+
+                      //save time to localstorage
+                      aelios.setState();
                   }
               }
             );
+          });
         }
     },
     animatePointer : function(latlng){
@@ -309,9 +373,10 @@ aelios = {
         aelios.o.pointerPrevLatLng = latlng;
     },
     dragstarted : function(){
+
         $('#template').addClass('drag');
         aelios.o.interval = window.setInterval(function(){
-            if(map.getCenter().lng() == aelios.o.curLoc.lng() && map.getCenter().lat() == aelios.o.curLoc.lat()){
+            if(map.getCenter().lng() == aelios.u.curLoc.lng() && map.getCenter().lat() == aelios.u.curLoc.lat()){
                 //didn't move while dragging, no need to update location
             }else{
                 //aelios.updateCurrentLocation(map.getCenter());
@@ -320,9 +385,9 @@ aelios = {
     },
     updateLightHours : function(beginTime,endTime,nowTime) {
 
-        beginTime = aelios.parseDateTime(beginTime);
-        endTime = aelios.parseDateTime(endTime);
-        nowTime = aelios.parseDateTime(nowTime);
+        beginTime = beginTime;
+        endTime = endTime;
+        nowTime = nowTime;
 
         //piggyBack on jquery's animate, to animate canvas properties
         $('#one').animate({
@@ -348,6 +413,8 @@ aelios = {
         }else{
             var duration  = (-nowTime + aelios.o.nowTime) * speed;
         }
+        aelios.u.handDeg = parseInt(nowTime * .25,10) + 'deg';
+        aelios.setState();
         $('#two').stop().animate({
                 top : nowTime
             },
@@ -362,18 +429,23 @@ aelios = {
                         'timeCanvas'
                     );
                     $('#hand').css('rotate',parseInt(time * .25,10) + 'deg');
-                    if(parseInt(time * .25,10) < 50){
-                        aelios.o.$template.addClass('hideRight');
-                    }else if(parseInt(time * .25,10) > 290){
-                        aelios.o.$template.addClass('hideLeft');
-                    }else{
-                        aelios.o.$template.removeClass('hideRight hideLeft');
-                    }
+                    aelios.updateTitles(time);
+
                 },
                 complete: function (){
                     aelios.o.nowTime = parseInt($(this).css('top'));
                 }
             })
+    },
+    //determine which titles needs to hide under the hand triangle
+    updateTitles : function(time){
+        if(parseInt(time * .25,10) < 50){
+                        aelios.o.$template.addClass('hideRight');
+        }else if(parseInt(time * .25,10) > 290){
+            aelios.o.$template.addClass('hideLeft');
+        }else{
+            aelios.o.$template.removeClass('hideRight hideLeft');
+        }
     },
     parseDateTime : function(time){
         var time = time.split(':');
@@ -414,22 +486,24 @@ aelios = {
         }
     },
     search : function(){
-        CAAT.AudioManager.play('btn');
         $('.titleCont').animate({width:300,height:30,marginTop:15},{
-            duration:200
-        },{
-            complete:function(){}
+            duration:200,
+            complete:function(){
+                $('#searchInput').focus();
+            }
         });
         if($('body').is('.search')){
             aelios.findLocation($('#searchInput').prop('value'));
         }
 
         $('body').addClass('search');
+//        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
     },
     searchOff : function(){
+//        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
         $('body').removeClass('search');
         $('#searchInput').prop('value','');
-        $('.titleCont').animate({width:aelios.o.titleWidth,height:50,marginTop:0},{
+        $('.titleCont').animate({width:aelios.u.titleWidth,height:50,marginTop:0},{
             duration:200,
             easing: 'swing',
             complete: function(){
@@ -439,13 +513,16 @@ aelios = {
 
     },
     findLocation : function(address){
-
         $('#title .titleCont').removeClass('error');
         geocoder.geocode({ 'address': address}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK && address != '') {
-                aelios.searchOff();
+                aelios.u.country = results[0].address_components.pop().long_name;
+                aelios.u.place = $('#searchInput').prop('value');
+                $('#country').html(aelios.u.country);
+                $('#location').html(aelios.u.place);
                 map.setCenter(results[0].geometry.location);
                 aelios.updateCurrentLocation();
+                aelios.searchOff();
             } else {
                 $('#title .titleCont').addClass('error');
                 $('#searchInput').prop('value','');
@@ -457,8 +534,23 @@ aelios = {
         angle *= Math.PI / 180;
         return {x: center.x + Math.sin(Math.PI - angle) * radius,
             y: center.y + Math.cos(Math.PI - angle) * radius};
+    },
+    setState : function(){
+        var obj = $.extend({},aelios.u);
+        obj.lat = aelios.u.curLoc.lat();
+        obj.lng = aelios.u.curLoc.lng();
+        localStorage['state'] = JSON.stringify(obj);
+    },
+    getState : function(){
+        if(window.localStorage && typeof localStorage.state != "undefined"){
+            var obj = JSON.parse(localStorage.state);
+            obj.curLoc = new google.maps.LatLng(obj.lat, obj.lng);
+            return obj;
+        }else{
+            return false;
+        }
     }
-}
+};
 
 $(document).ready(function(){
     aelios.init();

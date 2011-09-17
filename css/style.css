@@ -31,6 +31,10 @@ body {
     -moz-box-shadow:0 0 45px #000;
     -o-box-shadow:0 0 45px #000;
     box-shadow:0 0 45px #000;
+    z-index: 1
+}
+.weather #marker{
+    z-index: 300;
 }
 .layer,#marker::before,#marker::after,#days::after{
     width:100%;
@@ -43,12 +47,12 @@ body {
 #marker::after{
     content:"";
     background: url(../img/jilionRim.png) 0 0 no-repeat;
-    z-index: 1500;
+    z-index: 200;
 }
 /*rotatbles*/
 #rotate{
     background: url(../img/rotateRim.png) 0 0 no-repeat;
-    z-index: 1000;
+    z-index: 100;
     -webkit-transform-origin:50% 50%;
        -moz-transform-origin:50% 50%;
          -o-transform-origin:50% 50%;
@@ -285,6 +289,7 @@ body.offline #offline{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+    text-transform: capitalize;
 }
 #country{
 	border-left:1px solid  rgba(200,200,200,0.2);
@@ -338,16 +343,24 @@ body.offline #offline{
     position: fixed;
     left:0;top:0;
     right:0;bottom:0;
-    background: rgba(0,0,0,0);
+    background: rgba(0,0,0,0.0);
     z-index: 200;
-    pointer-events:none;
+    visibility: hidden;
+    background-repeat: no-repeat;
+    background-position: 50% 50% !important;
+}
+#overlayCanvas{
+    display: none;
 }
 .search #overlay{
     pointer-events:auto;
-    -webkit-transition:opacity 0ms linear;
-       -moz-transition:opacity 0ms linear;
-            transition:opacity 0ms linear;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.6) !important;
+    visibility: visible;
+}
+.weather #overlay{
+    pointer-events:auto;
+    visibility: visible;
+    
 }
 .search #title,.search #search,.search #mylocation{
     z-index: 300;
@@ -417,6 +430,11 @@ body.offline #offline{
     left: 187px;
     z-index: 10;
     top: 43px;
+    -webkit-transform : rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+    
     -webkit-transform-origin: 50% 100%;
     -moz-transform-origin: 50% 100%;
     -o-transform-origin: 50% 100%;
@@ -483,15 +501,6 @@ body.offline #offline{
 .shutter{
     width: 400px;height: 400px;
     position: absolute;
-}
-
-
-.fix{
-    overflow: hidden;
-    height: 100%;
-    width:100%;
-    border-radius: 400px;
-
 }
 
 .shutterInner{
