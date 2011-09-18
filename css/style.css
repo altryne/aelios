@@ -367,7 +367,7 @@ body.offline #offline{
     display: none;
 }
 .search #overlay{
-    pointer-events:auto;
+    /*pointer-events:auto;*/
     background: rgba(0,0,0,0.6) !important;
     visibility: visible;
     opacity: 1;
@@ -375,7 +375,7 @@ body.offline #offline{
     -webkit-transition-delay:0ms;
 }
 .weather #overlay{
-    pointer-events:auto;
+    /*pointer-events:auto;*/
     visibility: visible;
     opacity: 1;
     z-index: 200

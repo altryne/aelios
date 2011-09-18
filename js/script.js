@@ -139,6 +139,7 @@ aelios = {
 //            updateCurrentLocation(map.getCenter());
 //        });
         google.maps.event.addListener(map, 'dragstart', aelios.dragstarted);
+        google.maps.event.addListener(map, 'mousedown', aelios.overlayOff);
         google.maps.event.addListener(map, 'tilesloaded', function() {
             if(aelios.o.mapLoaded) return false;
             aelios.getBoundingBox();
@@ -168,10 +169,10 @@ aelios = {
                 aelios.findLocation($(this).prop('value'));
             }
             if(e.keyCode == 27){
-                aelios.searchOff();
+                aelios.overlayOff();
             }
         });
-        $('#overlay').bind('click',aelios.searchOff);
+        $('#overlay').bind('click',aelios.overlayOff());
         
     },
     getBoundingBox : function(){
@@ -374,7 +375,7 @@ aelios = {
         aelios.o.pointerPrevLatLng = latlng;
     },
     dragstarted : function(){
-
+        aelios.overlayOff();
         $('#template').addClass('drag');
         aelios.o.interval = window.setInterval(function(){
             if(map.getCenter().lng() == aelios.u.curLoc.lng() && map.getCenter().lat() == aelios.u.curLoc.lat()){
@@ -500,9 +501,14 @@ aelios = {
         $('body').addClass('search');
 
     },
-    searchOff : function(){
+    overlayOff : function(){
         map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+        if($('body').hasClass('search')){
+            aelios.searchOff();
+        }
         $('body').removeClass('search weather');
+    },
+    searchOff : function(){
         $('#searchInput').prop('value','');
         $('.titleCont').animate({width:aelios.u.titleWidth,height:50,marginTop:0},{
             duration:200,
@@ -524,7 +530,7 @@ aelios = {
                 $('#location').html(aelios.u.place);
                 map.setCenter(results[0].geometry.location);
                 aelios.updateCurrentLocation();
-                aelios.searchOff();
+                aelios.overlayOff();
             } else {
                 $('#title .titleCont').addClass('error');
                 $('#searchInput').prop('value','');
