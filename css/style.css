@@ -2,15 +2,65 @@ html {
 	height: 100%
 }
 
-body {
+body{
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
 	
 }
-
+#loader{
+    background: url(../img/black_linen.png) repeat;
+    width:100%;height: 100%;
+    position: fixed;
+    top:0;right:0;left:0;bottom:0;
+    z-index: 2000;
+}
+.loaded2 #loader{
+    display: none;
+}
+#installing{
+    position: absolute;
+    height: 22px;
+    background: rgba(0, 0, 0, 0.8);
+    width: 90%;
+    margin-left: 5%;
+    bottom: 15px;
+    border-radius: 15px;
+    border: 3px solid rgba(0,0,0,0.5);
+}
+#installprogress{
+    height: 17px;
+    width:0;
+    min-width:5px;
+    background: -webkit-linear-gradient(top,#5185d0 0%,#093067 100%);
+    background: -moz-linear-gradient(top,#5185d0 0%,#093067 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,5185d0), color-stop(100%,#093067));
+    background: -o-linear-gradient(top,#5185d0 0%,#093067 100%);
+    background: linear-gradient(top,#5185d0 0%,#093067 100%);
+    box-shadow: inset 0px 1px 2px rgba(255,255,255,0.8);
+    border-radius: 15px;
+    margin-top: 2px;
+    
+    
+    opacity: 0.9;
+    /*-webkit-transition:all 10ms linear;*/
+}
+#appicon{
+    width: 175px;
+    height: 175px;
+    background: url(../img/icon.jpg) no-repeat;
+    position: absolute;
+    left:50%;
+    top:50%;
+    border-radius: 30px;
+    margin-left:-87px;
+    margin-top:-87px;
+}
 #mainmap {
 	height: 100%
+}
+.loaded #template,.loading #mainmap{
+    display: block !important;
 }
 
 /*cool aelios controller*/

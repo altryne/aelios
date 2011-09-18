@@ -38,6 +38,7 @@ aelios = {
         titleState : ''
     },
     init : function(){
+        
         var map;
         var geocoder;
 
@@ -45,8 +46,8 @@ aelios = {
         this.o.$pointerCont = $('#pointerCont');
         this.o.$pointer = $('#pointer');
         this.o.$template= $('#template');
-        
-        if(aelios.getState()){
+
+        if(typeof aelios.getState == 'function'){
             $.extend(aelios.u,aelios.getState());
         }else{
             aelios.u.curLoc = new google.maps.LatLng(aelios.u.lat, aelios.u.lng);
@@ -102,6 +103,7 @@ aelios = {
         this.createMap();
     },
     createMap : function(){
+        
         //todo:search localstorage for previously set latlng
         var myOptions = {
             zoom: 6,
@@ -144,6 +146,7 @@ aelios = {
             if(aelios.o.mapLoaded) return false;
             aelios.getBoundingBox();
             aelios.o.mapLoaded = true;
+            $('#loader').fadeOut('100');
             window.setTimeout(function(){
                 aelios.updateCurrentLocation(map.getCenter());
             },1000);
@@ -203,7 +206,7 @@ aelios = {
             document.querySelector('body').classList.add('offline');
         }
         aelios.u.curLoc = curLoc || map.getCenter();
-        $('#loader').fadeIn();
+        
         //set timeout to use geonames results instead of googles geocoding (much more reliable)
         var timeout = 2000;
         if (geocoder) {
@@ -573,18 +576,19 @@ aelios = {
         localStorage['state'] = JSON.stringify(obj);
     },
     getState : function(){
-        if(window.localStorage && typeof localStorage.state != "undefined"){
+        if(window.localStorage && typeof localStorage.state != "undefined" && google.maps.LatLng){
             var obj = JSON.parse(localStorage.state);
             obj.curLoc = new google.maps.LatLng(obj.lat, obj.lng);
             return obj;
         }else{
+            aelios.u.curLoc = new google.maps.LatLng(aelios.u.lat, aelios.u.lng);
             return false;
         }
     }
 };
 
 $(document).ready(function(){
-    aelios.init();
+//    aelios.init();
 });
 
 

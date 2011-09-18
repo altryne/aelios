@@ -14,17 +14,50 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <!--    <script type="text/javascript" src="../live.js"></script>-->
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
-    <script type="text/javascript" src="js/jquery.transform.js"></script>
-    <script type="text/javascript" src="js/audioManager.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-    <script type="text/javascript" src="js/rotator.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
+    <script type="text/javascript" src="js/jquery.loader3.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.preLoadGUI(
+                {load: [
+                    ['img/black_linen.png', 'img'],
+                    ['img/icon.jpg', 'img'],
+                    ['js/jquery.transform.js', 'js'],
+                    ['js/audioManager.js', 'js'],
+                    ['js/rotator.js', 'js'],
+                    ['js/script.js', 'js'],
+                    []
+                ],
+                step : function(perc){
+                    $('#installprogress').animate({width:perc + '%'},200);
+                },
+                complete : function(){
+                    $('html').addClass('loaded');
+                    $('#installprogress').animate({width:'100%'},1000);
+                    aelios.init();
+                }
+                }
+            );
+        });
+    </script>
+<!--    <script type="text/javascript" src="js/jquery.transform.js"></script>-->
+<!--    <script type="text/javascript" src="js/audioManager.js"></script>-->
+
+<!--    <script type="text/javascript" src="js/rotator.js"></script>-->
+<!--    <script type="text/javascript" src="js/script.js"></script>-->
 </head>
 <body>
+<div id="loader">
+    <div id="appicon">
+        <div id="installing">
+            <div id="installprogress"></div>
+        </div>
+    </div>
+</div>
 <div id="mainmap" style="width:100%; height:100%">
 
 </div>
-<div id="template">
+<div id="template" style="display: none">
 
     <div id="dateTime">
 
