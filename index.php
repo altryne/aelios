@@ -130,6 +130,32 @@
         <div id="shadow"></div>
         <div id="boundingBox"></div>
     </div>
+    <div id="weatherCont">
+        <div class="wicon night thunders">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon night rain">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon night showers">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon night mist">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon day snowrain">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon day rain">
+            <div class="wiconInner"></div>
+        </div>
+        <div class="wicon day">
+            <div class="wiconInner "></div>
+        </div>
+        <div class="wicon day">
+            <div class="wiconInner day"></div>
+        </div>
+    </div>
     <div id="overlay">
         <canvas id="overlayCanvas" width="100%" height="100%"></canvas>
     </div>
