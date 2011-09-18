@@ -158,6 +158,7 @@ aelios = {
             });
         });
         $('#search').bind('click',aelios.search);
+        $('.titleCont').bind('click',aelios.weather);
         $('#search,#mylocation').bind('mousedown',function(){
             CAAT.AudioManager.play('btn');
         });
@@ -497,11 +498,11 @@ aelios = {
         }
 
         $('body').addClass('search');
-//        map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+
     },
     searchOff : function(){
-//        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-        $('body').removeClass('search');
+        map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+        $('body').removeClass('search weather');
         $('#searchInput').prop('value','');
         $('.titleCont').animate({width:aelios.u.titleWidth,height:50,marginTop:0},{
             duration:200,
@@ -513,6 +514,7 @@ aelios = {
 
     },
     findLocation : function(address){
+
         $('#title .titleCont').removeClass('error');
         geocoder.geocode({ 'address': address}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK && address != '') {
@@ -528,6 +530,29 @@ aelios = {
                 $('#searchInput').prop('value','');
             }
         })
+    },
+    /* go get weather*/
+    weather :function(){
+    window.setTimeout(function(){
+    map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+    },300);
+    
+      $('body').addClass('weather');
+      var xhr = $.ajax({
+          url : "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D'http%3A%2F%2Fapi.yr.no%2Fweatherapi%2Flocationforecast%2F1.8%2F%3Flat%3D"+aelios.u.curLoc.lat()+"%3Blon%3D"+aelios.u.curLoc.lng()+"'&format=json&callback=",
+          success: function(data){
+              if(data.query.results.weatherdata){
+                  ztime = data.query.results.weatherdata.product.time;
+                  $.each(ztime, function(){
+//                      console.log(this.from.substr(0,10),this.from.substring(11).substr(0,5),this.to.substring(11).substr(0,5),aelios.u.timeString);
+                  })
+              }
+          }
+      })
+    },
+//    weather mode off
+    weatherOff :  function(){
+        $('body').removeClass('weather');
     },
     //helper functions
     getPointAt : function (center, radius, angle) {

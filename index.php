@@ -46,124 +46,76 @@
 
         <div id="shutterCont" style="display: none">
             <div class="shutter shutter24">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter23">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter22">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter21">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter20">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter19">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter18">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter17">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter16">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter15">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter14">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter13">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter12">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter11">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter10">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter9">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter8">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter7">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter6">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter5">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter4">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter3">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter2">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
             <div class="shutter shutter1">
-                <div class="fix">
-                    <div class="shutterInner"></div>
-                </div>
+                <div class="shutterInner"></div>
             </div>
         </div>
         <div id="hand"></div>
@@ -178,7 +130,9 @@
         <div id="shadow"></div>
         <div id="boundingBox"></div>
     </div>
-    <div id="overlay"></div>
+    <div id="overlay">
+        <canvas id="overlayCanvas" width="100%" height="100%"></canvas>
+    </div>
     <div id="title">
         <div class="titleCont">
             <div id='location'>Somewhere...</div>

@@ -210,10 +210,16 @@ body {
         -webkit-transition:opacity 500ms linear;
            -moz-transition:opacity 500ms linear;
                 transition:opacity 500ms linear;
+    pointer-events:auto;
 }
+
 #dateTime{
 	bottom:5%;
     font-size: 15px;
+    -webkit-transition:all 1s linear;
+}
+.weather #dateTime{
+    text-align: left;
 }
 .offline #dateTime{
     opacity: 0;
@@ -258,7 +264,7 @@ body.offline #offline{
 #search::after{
     background-position: 16px -69px;
 }
-#mylocation:active,#search:active{
+#mylocation:active,#search:active,#title:active .titleCont{
     background: -moz-linear-gradient(top, rgba(0,0,0,0.95) 0%, rgba(50,50,50,0.85) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.95)), color-stop(100%,rgba(50,50,50,0.85))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top, rgba(0,0,0,0.95) 0%,rgba(50,50,50,0.85) 100%); /* Chrome10+,Safari5.1+ */
@@ -271,6 +277,9 @@ body.offline #offline{
     -moz-transition:opacity 0ms linear;
     transition:opacity 0ms linear;
     opacity:0.5;
+}
+.weather #mylocation,.weather #search{
+    opacity:0;
 }
 #mylocation{
 	left:10%;
@@ -311,6 +320,7 @@ body.offline #offline{
 	height:50px;
 	padding:10px;
 	border-radius:7px;
+    cursor: pointer;
 	/*-moz-transition:all 500ms linear;*/
 	/*-o-transition:all 500ms linear;*/
 	/*-webkit-transition:all 500ms linear;*/
