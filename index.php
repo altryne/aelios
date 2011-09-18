@@ -149,7 +149,7 @@
         <div class="wicon day rain">
             <div class="wiconInner"></div>
         </div>
-        <div class="wicon day">
+        <div class="wicon day snow">
             <div class="wiconInner "></div>
         </div>
         <div class="wicon day">

@@ -31,7 +31,7 @@ body {
     -moz-box-shadow:0 0 45px #000;
     -o-box-shadow:0 0 45px #000;
     box-shadow:0 0 45px #000;
-    z-index: 1
+    z-index: 25
 }
 .weather #marker{
     z-index: 300;
@@ -354,10 +354,14 @@ body.offline #offline{
     left:0;top:0;
     right:0;bottom:0;
     background: rgba(0,0,0,0.0);
-    z-index: 200;
-    visibility: hidden;
+    z-index: 10;
+    pointer-events:none;
     background-repeat: no-repeat;
     background-position: 50% 50% !important;
+    opacity: 0;
+    -webkit-transition:opacity 500ms ease-in;
+    -webkit-transition-delay:200ms;
+    -webkit-transform:translateZ(0);
 }
 #overlayCanvas{
     display: none;
@@ -366,11 +370,15 @@ body.offline #offline{
     pointer-events:auto;
     background: rgba(0,0,0,0.6) !important;
     visibility: visible;
+    opacity: 1;
+    z-index: 200;
+    -webkit-transition-delay:0ms;
 }
 .weather #overlay{
     pointer-events:auto;
     visibility: visible;
-    
+    opacity: 1;
+    z-index: 200
 }
 .search #title,.search #search,.search #mylocation{
     z-index: 300;
@@ -537,12 +545,14 @@ body.offline #offline{
 
 	top:50%;
 	left:50%;
-    z-index: 0;
+    z-index: 21;
 	margin-left:-200px;
 	margin-top:-180px;
+    visibility: hidden;
 }
 .weather #weatherCont{
     z-index: 210;
+    visibility: visible;
 }
 .wicon{
     width:100px;
@@ -552,6 +562,11 @@ body.offline #offline{
     
     margin-left:-50px;
     margin-top: -35px;
+    -webkit-transition:all 400ms ease-out;
+    -webkit-transform:translateZ(0);
+    opacity: 0;
+    
+    
 }
 .wicon.night{
     background: url(../img/weather_icons/clear.png) no-repeat;
@@ -561,51 +576,129 @@ body.offline #offline{
     background: url(../img/weather_icons/sunny.png) no-repeat;
 
 }
-
+.weather .wicon{
+    opacity: 1;
+}
 .wicon:nth-child(1) {
+    left: 60px;
+    top: 120px;
+    -webkit-transition-delay:900ms;
+}
+.weather .wicon:nth-child(1) {
     left: -50px;
     top: 100px;
+    -webkit-transition-delay:200ms;
 }
 
 .wicon:nth-child(2) {
+    left: 150px;
+    top: 70px;
+    -webkit-transition-delay:800ms;
+}
+.weather .wicon:nth-child(2) {
     left: 100px;
     top: -40px;
-
+    -webkit-transition-delay:300ms;
 }
 
 .wicon:nth-child(3) {
+    right: 120px;
+    top: 90px;
+    -webkit-transition-delay:700ms;
+}
+.weather .wicon:nth-child(3) {
     right: 50px;
     top: -40px;
-
+    -webkit-transition-delay:400ms;
 }
 
 .wicon:nth-child(4) {
+    right: 20px;
+    top: 140px;
+    -webkit-transition-delay:600ms;
+}
+.weather .wicon:nth-child(4) {
     right: -80px;
     top: 100px;
+    -webkit-transition-delay:500ms;
 }
 
 .wicon:nth-child(5) {
+    right: 20px;
+    bottom: 90px;
+    -webkit-transition-delay:500ms;
+}
+.weather .wicon:nth-child(5) {
     right: -80px;
     bottom: 60px;
+    -webkit-transition-delay:600ms;
 }
 
 .wicon:nth-child(6) {
     right: 50px;
     bottom: -60px;
+    -webkit-transition-delay:400ms;
+}
+.weather .wicon:nth-child(6) {
+    right: 50px;
+    bottom: -60px;
+    -webkit-transition-delay:500ms;
 }
 
 .wicon:nth-child(7) {
+    left: 120px;
+    bottom: 20px;
+    -webkit-transition-delay:300ms;
+}.weather .wicon:nth-child(7) {
     left: 90px;
     bottom: -60px;
+    -webkit-transition-delay:800ms;
 }
 
 .wicon:nth-child(8) {
+    left: 40px;
+    bottom: 100px;
+    -webkit-transition-delay:200ms;
+}
+.weather .wicon:nth-child(8) {
     left: -40px;
     bottom: 60px;
+    -webkit-transition-delay:900ms;
 }
 .wiconInner{
     width:100px;height:70px;
     position: absolute;
     background-size:100px 70px;
+    left:8px;
+    top:8px;
+    -webkit-animation: move 10s linear 3500ms infinite alternate;
+    -webkit-transform: rotateZ(0);
 
+}
+@-webkit-keyframes move{
+    0% { -webkit-transform: translate(5px, 0)  }
+	100% { -webkit-transform: translate(-5px, 0)  }
+}
+.snow .wiconInner{
+    background: url(../img/weather_icons/snowing.png);
+    -webkit-animation-delay: -1500ms !important;
+}
+.rain .wiconInner{
+    background: url(../img/weather_icons/rain.png);
+    -webkit-animation-delay: 0ms !important;
+}
+.thunder .wiconInner{
+    background: url(../img/weather_icons/thunders.png);
+    -webkit-animation-delay: 3500ms !important;
+}
+.snowrain .wiconInner{
+    background: url("../img/weather_icons/snow and rain.png");
+    -webkit-animation-delay: 1500ms !important;
+}
+.mist .wiconInner{
+    background: url("../img/weather_icons/mist.png");
+    -webkit-animation-delay: 2000ms !important;
+}
+.showers .wiconInner{
+    background: url("../img/weather_icons/showers.png");
 }

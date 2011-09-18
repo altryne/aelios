@@ -533,9 +533,9 @@ aelios = {
     },
     /* go get weather*/
     weather :function(){
-    window.setTimeout(function(){
+
     map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-    },300);
+
     
       $('body').addClass('weather');
       var xhr = $.ajax({
