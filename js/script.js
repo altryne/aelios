@@ -162,7 +162,7 @@ aelios = {
             });
         });
         $('#search').bind('click',aelios.search);
-        $('.titleCont').bind('click',aelios.weather);
+        $('#titleCont').bind('click',aelios.weather);
         $('#search,#mylocation').bind('mousedown',function(){
             CAAT.AudioManager.play('btn');
         });
@@ -228,7 +228,7 @@ aelios = {
                     $('#location').html(aelios.u.place);
                     $('#country').html(aelios.u.country);
 
-                    aelios.u.titleWidth = $('#title').find('.titleCont').width();
+                    aelios.u.titleWidth = $('#titleCont').width();
                     $('#template').removeClass('drag');
                     aelios.animatePointer();
                     //abort cities ajax request if ran out of time
@@ -491,7 +491,7 @@ aelios = {
         }
     },
     search : function(){
-        $('.titleCont').animate({width:300,height:30,marginTop:15},{
+        $('#titleCont').animate({width:300,height:30,marginTop:15},{
             duration:200,
             complete:function(){
                 $('#searchInput').focus();
@@ -513,18 +513,18 @@ aelios = {
     },
     searchOff : function(){
         $('#searchInput').prop('value','');
-        $('.titleCont').animate({width:aelios.u.titleWidth,height:50,marginTop:0},{
+        $('#titleCont').animate({width:aelios.u.titleWidth,height:50,marginTop:0},{
             duration:200,
             easing: 'swing',
             complete: function(){
-                $('.titleCont').width('');
+                $('#titleCont').width('');
             }
         });
 
     },
     findLocation : function(address){
 
-        $('#title .titleCont').removeClass('error');
+        $('#titleCont').removeClass('error');
         geocoder.geocode({ 'address': address}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK && address != '') {
                 aelios.u.country = results[0].address_components.pop().long_name;
@@ -535,7 +535,7 @@ aelios = {
                 aelios.updateCurrentLocation();
                 aelios.overlayOff();
             } else {
-                $('#title .titleCont').addClass('error');
+                $('#titleCont').addClass('error');
                 $('#searchInput').prop('value','');
             }
         })

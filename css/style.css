@@ -22,11 +22,14 @@ body{
     position: absolute;
     height: 22px;
     background: rgba(0, 0, 0, 0.8);
-    width: 90%;
+    width: 85%;
     margin-left: 5%;
     bottom: 15px;
     border-radius: 15px;
-    border: 3px solid rgba(0,0,0,0.5);
+    
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    border-left-width: 6px;
+    border-right-width: 6px;
 }
 #installprogress{
     height: 17px;
@@ -257,19 +260,35 @@ body{
 }
 #title{
 	top: 7%;
-        -webkit-transition:opacity 500ms linear;
-           -moz-transition:opacity 500ms linear;
-                transition:opacity 500ms linear;
+        -webkit-transition:all 500ms linear;
+           -moz-transition:all 500ms linear;
+                transition:all 500ms linear;
     pointer-events:auto;
+}
+.weather #title{
+    margin-left:-40%;
+    pointer-events:none;
+    font-size: 60px;
+    z-index: 240;
+}
+.weather #titleCont{
+
+   
+
+
 }
 
 #dateTime{
 	bottom:5%;
+    width: auto;
+    left:50%;
+    margin-left: -12.5%;
     font-size: 15px;
     -webkit-transition:all 1s linear;
 }
 .weather #dateTime{
-    text-align: left;
+    z-index: 240;
+    left:15%;
 }
 .offline #dateTime{
     opacity: 0;
@@ -314,7 +333,7 @@ body.offline #offline{
 #search::after{
     background-position: 16px -69px;
 }
-#mylocation:active,#search:active,#title:active .titleCont{
+#mylocation:active,#search:active,#titleCont:active {
     background: -moz-linear-gradient(top, rgba(0,0,0,0.95) 0%, rgba(50,50,50,0.85) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.95)), color-stop(100%,rgba(50,50,50,0.85))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top, rgba(0,0,0,0.95) 0%,rgba(50,50,50,0.85) 100%); /* Chrome10+,Safari5.1+ */
@@ -330,6 +349,7 @@ body.offline #offline{
 }
 .weather #mylocation,.weather #search{
     opacity:0;
+    visibility: hidden;
 }
 #mylocation{
 	left:10%;
@@ -362,7 +382,7 @@ body.offline #offline{
     width:auto;
     /*min-width: 1%;*/
 }
-#title .titleCont{
+#title #titleCont{
 	width:auto;
     min-width: 30px;
 	max-width:999px;
@@ -376,7 +396,7 @@ body.offline #offline{
 	/*-webkit-transition:all 500ms linear;*/
 	/*transition:all 500ms linear;*/
 }
-#title .titleCont,#mylocation,#search{
+#title #titleCont,#mylocation,#search{
 	border:1px solid rgba(0,0,0,0.8);
 	-webkit-box-shadow:0 1px 5px rgba(0,0,0,0.5),inset 0px 1px 0 rgba(255,255,255,0.4);
        -moz-box-shadow:0 1px 5px rgba(0,0,0,0.5),inset 0px 1px 0 rgba(255,255,255,0.4);
@@ -452,7 +472,7 @@ body.offline #offline{
     outline: none;
     font-family: 'Arial Black',Arial;
 }
-.search #title .titleCont {
+.search #title #titleCont {
     position: relative;
     pointer-events:auto;
     border: 2px solid rgba(0, 0, 0, 1);

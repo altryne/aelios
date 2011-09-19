@@ -193,7 +193,7 @@
         <canvas id="overlayCanvas" width="100%" height="100%"></canvas>
     </div>
     <div id="title">
-        <div class="titleCont">
+        <div id="titleCont">
             <div id='location'>Somewhere...</div>
             <div id='country'>World</div>
             <input type="text" id="searchInput" placeholder="Search"/>
