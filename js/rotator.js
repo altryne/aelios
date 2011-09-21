@@ -19,13 +19,17 @@ var zodiac = {
 	startAngle: 0,
     slicesCount : 4,
     stepsCount : 48,
+    pointsCount: 128,
     slices: Math.PI/ 2,	// 8 slices
     steps: Math.PI/ 24,	// 48 steps
+    points: Math.PI/ 64         ,	// 128 points
     track_position : false,
     curStep : 0,
+    curPoint : 0,
     initialShutter : 26,
     shutterDirection : -1,
     chokeFactor : 0,
+    startDir : 1,
     
 	handleEvent: function (e) {
         
@@ -76,9 +80,10 @@ var zodiac = {
 		var startY = e.y - this.originY;
 		this.startAngle = Math.atan2(startY, startX) - this.angle;
 		this.startStep = 0;
+		this.startPoint = 0;
 
-        zodiac.starDir = ((parseFloat(this.el.css('rotate')) * 180 / Math.PI) > 80)? -1 : 1;
-        zodiac.initialShutter = 25;
+        this.starDir = ((parseFloat(this.el.css('rotate')) * 180 / Math.PI) > 80)? -1 : 1;
+        this.initialShutter = 25;
 	},
 
 	rotateMove: function(e,evt) {
@@ -93,6 +98,7 @@ var zodiac = {
 
 
         zodiac.curStep = this.getSegment('steps');
+        zodiac.curPoint = this.getSegment('points');
 
 
 		var dx = e.x - this.originX;
@@ -121,17 +127,24 @@ var zodiac = {
 
         if(this.angleDeg > 0 && this.angleDeg <90){
             this.shutter.css('display','block');
-            if(zodiac.initialShutter == -5 || zodiac.initialShutter == 26){
-            zodiac.shutterDirection *= -1;
+            console.log(zodiac.curPoint,zodiac.initialShutter,(zodiac.initialShutter < -5 || zodiac.initialShutter > 25));
+            if(zodiac.initialShutter < -5 || zodiac.initialShutter > 25){
+                zodiac.shutterDirection *= -1;
             }
 
-            zodiac.initialShutter += zodiac.shutterDirection * this.scrollDir;
+            if(Math.abs(zodiac.curPoint-zodiac.startPoint) == 1){
+            console.log( (zodiac.curPoint-zodiac.startPoint) * this.shutterDirection,this.shutterDirection);
+            zodiac.initialShutter += zodiac.shutterDirection * (zodiac.curPoint-zodiac.startPoint) * 1.8 * this.startDir;
+//            zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
             if(zodiac.initialShutter >= 0){
-                zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
+                zodiac.shutter.find('.shutterInner').css('rotate',parseInt(zodiac.initialShutter)+'deg');
             }
+                }
         }else{
             this.shutter.css('display','none');
         }
+        zodiac.startStep = zodiac.curStep;
+        zodiac.startPoint = zodiac.curPoint;
 	},
 	rotateStop: function(e) {
         this.track_position = false;
@@ -139,9 +152,10 @@ var zodiac = {
         this.shutter.find('.shutterInner').animate({'rotate':'26deg'},250,function(){
                 zodiac.shutter.hide();
         });
-        zodiac.initialShutter = 25;
+        zodiac.initialShutter = 20;
         zodiac.shutterDirection = -1;
         zodiac.startStep = zodiac.curStep;
+        zodiac.startPoint = zodiac.curPoint;
 		if( this.angle%this.slices ) {
 			this.angle = Math.round(this.angle/this.slices) * this.slices;
 //			this.el[0].style.webkitTransitionDuration = '550ms';

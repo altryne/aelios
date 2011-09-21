@@ -31,6 +31,7 @@ body{
     border-left-width: 6px;
     border-right-width: 6px;
 }
+
 #installprogress{
     height: 17px;
     width:0;
@@ -279,16 +280,19 @@ body{
 }
 
 #dateTime{
-	bottom:5%;
-    width: auto;
-    left:50%;
-    margin-left: -12.5%;
+    bottom: 5%;
+    width: 200px;
+    left: 50%;
+    margin-left: -100px;
     font-size: 15px;
-    -webkit-transition:all 1s linear;
+    -webkit-transition: all .8s ease-in-out;
+
 }
 .weather #dateTime{
-    z-index: 240;
-    left:15%;
+    z-index: 500;
+    left:0%;
+    margin-left: 10px;
+    text-align: left;
 }
 .offline #dateTime{
     opacity: 0;
@@ -385,12 +389,13 @@ body.offline #offline{
 #title #titleCont{
 	width:auto;
     min-width: 30px;
-	max-width:999px;
+	max-width:400px;
 	display:inline-block;
 	height:50px;
 	padding:10px;
 	border-radius:7px;
     cursor: pointer;
+    overflow: hidden;
 	/*-moz-transition:all 500ms linear;*/
 	/*-o-transition:all 500ms linear;*/
 	/*-webkit-transition:all 500ms linear;*/
@@ -734,8 +739,10 @@ body.offline #offline{
     left: -40px;
     bottom: 60px;
     -webkit-transition-delay:900ms;
+    display: block;
 }
 .wiconInner{
+    display: none;
     width:100px;height:70px;
     position: absolute;
     background-size:100px 70px;

@@ -75,7 +75,6 @@
         o.complete();
             
     },update:function(f) {
-
         o.loaded += 1;
         var loadedPercentage = o.loaded / o.count * 100;
         o.step(loadedPercentage);

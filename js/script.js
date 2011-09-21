@@ -53,7 +53,6 @@ aelios = {
             aelios.u.curLoc = new google.maps.LatLng(aelios.u.lat, aelios.u.lng);
         }
 
-
         //set Sounds - using 
         CAAT.AudioManager.initialize(15);
         CAAT.AudioManager.addAudioFromDomNode('click', document.querySelector('#clickSound'));
@@ -99,6 +98,9 @@ aelios = {
         ctx.clearRect(can.width() / 2 - 100,can.height() / 2 - 100,200, 250);
 
         $('#overlay').css('background', 'url('+can[0].toDataURL()+')');
+//prevent error when not on internet
+        if(typeof google == 'undefined') return false;
+
         //initiate google map
         this.createMap();
     },
@@ -576,6 +578,8 @@ aelios = {
         localStorage['state'] = JSON.stringify(obj);
     },
     getState : function(){
+        //prevent error when not on internet
+        if(typeof google == 'undefined') return false;
         if(window.localStorage && typeof localStorage.state != "undefined" && google.maps.LatLng){
             var obj = JSON.parse(localStorage.state);
             obj.curLoc = new google.maps.LatLng(obj.lat, obj.lng);
