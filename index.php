@@ -159,12 +159,18 @@
             </div>
         </div>
         <div id="hand"></div>
-        <div id="days" class="layer">
+        <div id="dayshand"></div>
+        <div id="hours" class="layer">
             <div id="today"></div>
             <div id="tommorow"></div>
-            <canvas id="nightCanvas" width="364" height="364"></canvas>
-            <canvas id="dayLightCanvas" width="364" height="364"></canvas>
-            <canvas id="timeCanvas" width="279" height="279"></canvas>
+            <canvas class="dayLightCanvas" width="364" height="364"></canvas>
+            <canvas class="timeCanvas" width="279" height="279"></canvas>
+        </div>
+        <div id="days" class="layer">
+            <div id="thisweek"></div>
+            <div id="nextweek"></div>
+            <canvas class="dayLightCanvas" width="364" height="364"></canvas>
+            <canvas class="timeCanvas" width="279" height="279"></canvas>
         </div>
         <div id="glass"></div>
         <div id="shadow"></div>

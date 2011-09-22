@@ -32,7 +32,7 @@ aelios = {
         time : 735,
         riseTime : 375,
         setTime : 1110,
-        dayOrWeek : 'day',
+        dayWeekMode : 'days',
         pointerCss : '',
         handDeg : 'rotate(180deg)',
         titleState : ''
@@ -45,13 +45,17 @@ aelios = {
         //set cached variables
         this.o.$pointerCont = $('#pointerCont');
         this.o.$pointer = $('#pointer');
-        this.o.$template= $('#template');
+        this.o.$template = $('#template');
+        this.o.$canvases = $('.layer canvas');
 
         if(typeof aelios.getState == 'function'){
             $.extend(aelios.u,aelios.getState());
         }else{
             aelios.u.curLoc = new google.maps.LatLng(aelios.u.lat, aelios.u.lng);
         }
+        //set initial dayWeek mode to 'hours'
+        aelios.toggleDayWeek('hours');
+        
 
         //set Sounds - using 
         CAAT.AudioManager.initialize(15);
@@ -390,12 +394,12 @@ aelios = {
             }
         },1000);
     },
-    updateLightHours : function(beginTime,endTime,nowTime) {
-
+    updateLightHours : function(beginTime,endTime,nowTime,noanim) {
+        
         beginTime = beginTime;
         endTime = endTime;
         nowTime = nowTime;
-
+        
         //piggyBack on jquery's animate, to animate canvas properties
         $('#one').animate({
             left:beginTime,
@@ -408,7 +412,6 @@ aelios = {
                     parseInt($(this).css('left')),
                     parseInt($(this).css('top'))
                 );
-
             }
         });
         aelios.o.nowTime = parseInt($('#two').css('top'))
@@ -458,39 +461,55 @@ aelios = {
         var time = time.split(':');
         return parseInt(time[0], 10) * 60 + parseInt(time[1], 10);
     },
-    drawLight : function(beginDeg,endDeg,canvasElm){
+    //initiate the canvas properties
+    drawLight : function(beginTime,endTime,canvasElm,dayWeekMode){
+        dayWeekMode = dayWeekMode|| aelios.u.dayWeekMode;
         canvasElm = canvasElm || 'dayLightCanvas';
+        var canvasProps = {
+            dayWeekMode : dayWeekMode ,
+            canvasElm : canvasElm,
+            canvas : aelios.o.$canvases.filter('#'+dayWeekMode+' .'+canvasElm)[0],
+            lineWidth : (canvasElm == 'dayLightCanvas') ? 43 : 40,
+            counterclockwise : (canvasElm == 'dayLightCanvas') ? false : true,
+            degreeMultiply : .25,
+            beginTime: beginTime,
+            endTime : endTime
+        }
+        if(dayWeekMode == 'days'){
+            var d = new Date(aelios.u.dateString).getDay();
+            canvasProps.degreeMultiply =  0.0357;
+            canvasProps.beginTime =  d * 1440 + beginTime;
+        }
+
+        aelios.drawLightToCanvas(canvasProps);
+    },
+    drawLightToCanvas: function(obj){
+//        canvasElm = canvasElm || 'dayLightCanvas';
         //transform minutes to degrees each minute == 0.25 deg
         //probably there's a smarter way then converting from time to minutes to degrees to radians
-        beginDeg =  parseInt(beginDeg * .25,10) - this.o.degOffset;
-        endDeg = parseInt(endDeg * .25,10) - this.o.degOffset;
+        startArc =  parseInt(obj.beginTime * obj.degreeMultiply,10) - this.o.degOffset;
+        endArc= parseInt(obj.endTime * obj.degreeMultiply,10) - this.o.degOffset;
 
-        canvas = document.getElementById(canvasElm);
-        context = canvas.getContext("2d");
-        context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight);
+        context = obj.canvas.getContext("2d");
+        context.clearRect(0,0,400,400);
         context.beginPath();
-        context.lineWidth = 43;
-        centerX = centerY = canvas.offsetWidth / 2;
+        context.lineWidth = obj.lineWidth;
+        centerX = centerY = obj.canvas.offsetWidth / 2;
 //        centerY = canvas.offsetHeight / 2;
-        radius = canvas.offsetWidth / 2 - context.lineWidth/2;
+        radius = obj.canvas.offsetWidth / 2 - context.lineWidth/2;
         //one rad = (PI/180) * deg
-        startingAngle = (Math.PI / 180) * beginDeg;
-        endingAngle = (Math.PI / 180) * endDeg;
-        counterclockwise = false;
+        startingAngle = (Math.PI / 180) * startArc;
+        endingAngle = (Math.PI / 180) * endArc;
 
-        if(canvasElm == 'nightCanvas'){
-            
-        }else if(canvasElm == 'timeCanvas'){
-            context.lineWidth = 40;
-            context.arc(centerX, centerY, radius, startingAngle, endingAngle, true);
-            ptrn = context.createPattern(aelios.o.ptrn[0],'repeat');
-            context.strokeStyle = ptrn; // line color
-            context.stroke();
+
+        if(obj.canvasElm == 'timeCanvas'){
+            var ptrn = context.createPattern(aelios.o.ptrn[0],'repeat');
         }else{
-            context.arc(centerX, centerY, radius, startingAngle, endingAngle, counterclockwise);
-            context.strokeStyle = "white"; // line color
-            context.stroke();
+            var ptrn = "white";
         }
+        context.arc(centerX, centerY, radius, startingAngle, endingAngle, obj.counterclockwise);
+        context.strokeStyle = ptrn; // line style
+        context.stroke();
     },
     search : function(){
         $('#titleCont').animate({width:300,height:30,marginTop:15},{
@@ -546,8 +565,6 @@ aelios = {
     weather :function(){
 
     map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-
-    
       $('body').addClass('weather');
       var xhr = $.ajax({
           url : "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D'http%3A%2F%2Fapi.yr.no%2Fweatherapi%2Flocationforecast%2F1.8%2F%3Flat%3D"+aelios.u.curLoc.lat()+"%3Blon%3D"+aelios.u.curLoc.lng()+"'&format=json&callback=",
@@ -555,15 +572,35 @@ aelios = {
               if(data.query.results.weatherdata){
                   ztime = data.query.results.weatherdata.product.time;
                   $.each(ztime, function(){
-//                      console.log(this.from.substr(0,10),this.from.substring(11).substr(0,5),this.to.substring(11).substr(0,5),aelios.u.timeString);
+                      console.log(this.from.substr(0,10),this.from.substring(11).substr(0,5),this.to.substring(11).substr(0,5),aelios.u.timeString);
+
                   })
               }
           }
       })
     },
-//    weather mode off
+    /*
+      weather mode off
+   */
     weatherOff :  function(){
         $('body').removeClass('weather');
+    },
+    /*
+        change between day and week mode
+     */
+    toggleDayWeek : function(curMode){
+        aelios.o.$template.removeClass('hours days').addClass(curMode);
+        aelios.u.dayWeekMode = curMode;
+        var d = new Date(aelios.u.dateString).getDay();
+        if(curMode == 'days'){
+            degreeMultiply =  0.0357;
+            time =  d * 1440 + aelios.u.time;
+        }else{
+            degreeMultiply =  .25;
+            time =  aelios.u.time;
+        }
+        $('#hand').css('rotate',parseInt(time * degreeMultiply,10) + 'deg');
+        $('#one,#two').stop();
     },
     //helper functions
     getPointAt : function (center, radius, angle) {

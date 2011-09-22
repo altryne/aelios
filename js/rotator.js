@@ -19,17 +19,17 @@ var zodiac = {
 	startAngle: 0,
     slicesCount : 4,
     stepsCount : 48,
-    pointsCount: 128,
+    pointsCount: 500,
     slices: Math.PI/ 2,	// 8 slices
     steps: Math.PI/ 24,	// 48 steps
-    points: Math.PI/ 64         ,	// 128 points
+    points: Math.PI/ 250,	// 128 points
     track_position : false,
     curStep : 0,
     curPoint : 0,
-    initialShutter : 26,
+    shutterDeg : 20,
     shutterDirection : -1,
     chokeFactor : 0,
-    startDir : 1,
+    curState : 'hours',
     
 	handleEvent: function (e) {
         
@@ -79,7 +79,7 @@ var zodiac = {
 		var startX = e.x - this.originX;
 		var startY = e.y - this.originY;
 		this.startAngle = Math.atan2(startY, startX) - this.angle;
-		this.startStep = 0;
+
 		this.startPoint = 0;
 
         this.starDir = ((parseFloat(this.el.css('rotate')) * 180 / Math.PI) > 80)? -1 : 1;
@@ -92,13 +92,13 @@ var zodiac = {
         if(zodiac.curStep != this.getSegment('steps')){
             CAAT.AudioManager.play('click');
         }
-
-
+        
 //        zodiac.shutter.find('.shutterInner').css('backgroundPosition',zodiac.initialShutter);
 
 
         zodiac.curStep = this.getSegment('steps');
         zodiac.curPoint = this.getSegment('points');
+        zodiac.curSlice = this.getSegment('slices');
 
 
 		var dx = e.x - this.originX;
@@ -107,17 +107,8 @@ var zodiac = {
 		this.angle = Math.atan2(dy, dx) - this.startAngle;
 
         this.angleDeg = this.angle * 180 / Math.PI;
-        this.prevangleDeg = parseFloat(this.el.css('rotate')) * 180 / Math.PI;
 
-        
-        if(this.prevangleDeg < this.angleDeg){
-            this.scrollDir = this.starDir;
-        }
-
-        if(this.prevangleDeg > this.angleDeg){
-            this.scrollDir = -1 * this.starDir
-        }
-        //prevent rotating more then nessesary
+        //prevent rotating the outer rim more then nessesary
         if(this.angleDeg > -20 && this.angleDeg < 120){
             this.el.css('rotate',this.angle + 'rad');
         }else{
@@ -125,36 +116,38 @@ var zodiac = {
             this.angle = parseFloat(this.el.css('rotate'));
         }
 
-        if(this.angleDeg > 0 && this.angleDeg <90){
-            this.shutter.css('display','block');
-            console.log(zodiac.curPoint,zodiac.initialShutter,(zodiac.initialShutter < -5 || zodiac.initialShutter > 25));
-            if(zodiac.initialShutter < -5 || zodiac.initialShutter > 25){
-                zodiac.shutterDirection *= -1;
-            }
+        zodiac.dragDirection = (zodiac.curPoint-zodiac.startPoint);
+        
+        if(Math.abs(zodiac.dragDirection) == 1){
 
-            if(Math.abs(zodiac.curPoint-zodiac.startPoint) == 1){
-            console.log( (zodiac.curPoint-zodiac.startPoint) * this.shutterDirection,this.shutterDirection);
-            zodiac.initialShutter += zodiac.shutterDirection * (zodiac.curPoint-zodiac.startPoint) * 1.8 * this.startDir;
-//            zodiac.shutter.find('.shutterInner').css('rotate',zodiac.initialShutter +'deg');
-            if(zodiac.initialShutter >= 0){
-                zodiac.shutter.find('.shutterInner').css('rotate',parseInt(zodiac.initialShutter)+'deg');
+            if(zodiac.curSlice){
+                zodiac.shutterDirection = 1;
+                zodiac.changeState();
+            }else{
+                zodiac.shutterDirection = -1;
+                zodiac.changeState();
             }
-                }
-        }else{
-            this.shutter.css('display','none');
+            //increment the degree ( either minus or plus )
+            zodiac.shutterDeg += (zodiac.curPoint-zodiac.startPoint) * zodiac.shutterDirection * 1.8;
+            //update shutter rotation only if in range
+            if(zodiac.shutterDeg >= 0 && zodiac.shutterDeg <= 21){
+                this.shutter.css('display','block');
+                zodiac.shutter.find('.shutterInner').css('rotate',parseInt(zodiac.shutterDeg)+'deg');
+            }else if(zodiac.shutterDeg > 21){
+                    zodiac.shutter.hide();
+            }
+            
         }
-        zodiac.startStep = zodiac.curStep;
         zodiac.startPoint = zodiac.curPoint;
 	},
 	rotateStop: function(e) {
         this.track_position = false;
         zodiac.chokeFactor = 0;
-        this.shutter.find('.shutterInner').animate({'rotate':'26deg'},250,function(){
+        this.shutter.find('.shutterInner').animate({'rotate':'20deg'},250,function(){
                 zodiac.shutter.hide();
         });
-        zodiac.initialShutter = 20;
-        zodiac.shutterDirection = -1;
-        zodiac.startStep = zodiac.curStep;
+        zodiac.shutterDeg = 20;
+
         zodiac.startPoint = zodiac.curPoint;
 		if( this.angle%this.slices ) {
 			this.angle = Math.round(this.angle/this.slices) * this.slices;
@@ -179,7 +172,11 @@ var zodiac = {
 			selected = count + selected;
 
 		return selected;
-	}
+	},
+    changeState : function(){
+        zodiac.curState = (zodiac.curSlice) ? 'days' : 'hours';
+        aelios.toggleDayWeek(zodiac.curState);
+    }
 };
 
 
