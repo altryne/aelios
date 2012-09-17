@@ -6,7 +6,7 @@ body{
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
-	
+	background: url(../img/black_linen.png) repeat;
 }
 #loader{
     background: url(../img/black_linen.png) repeat;
@@ -272,7 +272,9 @@ body{
 #title,#dateTime,#offline{
 	position:fixed;
 	text-align:center;
-	width:100%;
+	width:600px;
+	left:50%;
+	margin-left:-300px;
 	color:#fff;
 	font-size:45px;
 	text-shadow:0 0 1px #000;
@@ -289,15 +291,14 @@ body{
     pointer-events:auto;
 }
 .weather #title{
-    margin-left:-40%;
+	left:15px;
+	margin-left:0;
+	text-align:left;
     pointer-events:none;
     font-size: 60px;
     z-index: 240;
 }
 .weather #titleCont{
-
-   
-
 
 }
 
@@ -319,7 +320,9 @@ body{
 .offline #dateTime{
     opacity: 0;
 }
-
+#offline{
+	opacity: 0;
+}
 body.offline #offline{
     opacity: 1;
     bottom:5%;
@@ -346,6 +349,30 @@ body.offline #offline{
     -moz-transition:opacity 500ms linear;
     transition:opacity 500ms linear;
     cursor: pointer;
+}
+#info{
+	height:70px;
+	width:70px;
+	border-radius:40px;
+	position:fixed;
+	bottom:7%;
+	right:7%;
+    -webkit-transition:opacity 500ms linear;
+    -moz-transition:opacity 500ms linear;
+    transition:opacity 500ms linear;
+    cursor: pointer;
+}
+#info::after{
+	content:"i";
+	display: block;
+	color:#fafafa;
+	opacity: 0.8;
+	font-size: 50px;
+	text-align: center;
+	width:100%;
+	text-shadow:2px 0 2px #000;
+	line-height:35px;
+	font-weight: bold;
 
 }
 #mylocation::after,#search::after{
@@ -359,7 +386,7 @@ body.offline #offline{
 #search::after{
     background-position: 16px -69px;
 }
-#mylocation:active,#search:active,#titleCont:active {
+#mylocation:active,#search:active,#titleCont:active ,#info:active {
     background: -moz-linear-gradient(top, rgba(0,0,0,0.95) 0%, rgba(50,50,50,0.85) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.95)), color-stop(100%,rgba(50,50,50,0.85))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top, rgba(0,0,0,0.95) 0%,rgba(50,50,50,0.85) 100%); /* Chrome10+,Safari5.1+ */
@@ -367,7 +394,7 @@ body.offline #offline{
 	background: -ms-linear-gradient(top, rgba(0,0,0,0.95) 0%,rgba(50,50,50,0.85) 100%); /* IE10+ */
 	background: linear-gradient(top, rgba(0,0,0,0.95) 0%,rgba(50,50,50,0.85) 100%);
 }
-.drag #mylocation,.drag #search,.drag #title{
+.drag #mylocation,.drag #search,.drag #title,.drag #info{
     -webkit-transition:opacity 0ms linear;
     -moz-transition:opacity 0ms linear;
     transition:opacity 0ms linear;
@@ -423,7 +450,7 @@ body.offline #offline{
 	/*-webkit-transition:all 500ms linear;*/
 	/*transition:all 500ms linear;*/
 }
-#title #titleCont,#mylocation,#search{
+#title #titleCont,#mylocation,#search,#info{
 	border:1px solid rgba(0,0,0,0.8);
 	-webkit-box-shadow:0 1px 5px rgba(0,0,0,0.5),inset 0px 1px 0 rgba(255,255,255,0.4);
        -moz-box-shadow:0 1px 5px rgba(0,0,0,0.5),inset 0px 1px 0 rgba(255,255,255,0.4);
@@ -667,7 +694,7 @@ body.offline #offline{
     width:100px;
     height: 70px;
     position: absolute;
-    background-size: 100px 70px;
+    background-size: 100px 70px !important;
     
     margin-left:-50px;
     margin-top: -35px;
@@ -778,7 +805,7 @@ body.offline #offline{
     display: none;
     width:100px;height:70px;
     position: absolute;
-    background-size:100px 70px;
+    background-size:100px 70px !important;
     left:8px;
     top:8px;
     -webkit-animation: move 10s linear 3500ms infinite alternate;
@@ -814,4 +841,18 @@ body.offline #offline{
 }
 .showers .wiconInner{
     background: url("../img/weather_icons/showers.png");
+}
+
+.social_buttons{
+	position: absolute;
+	top: 0;
+	margin: 10px 0 0 0;
+	padding: 0;
+}
+.social_buttons li{
+	display: inline-block;
+}
+.social_buttons li:nth-child(1){
+	max-width:90px;
+	vertical-align: top;
 }

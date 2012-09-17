@@ -7,49 +7,64 @@
 
     <!-- Eliminate url and button bars if added to home screen -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Aelios html5 clone">
+   	<meta name="author" content="Alex Wolkov">
+
+    <meta property="og:title" content="title" />
+    <meta property="og:description" content="description" />
+    <meta property="og:image" content="thumbnail_image" />
+
+    <meta itemprop="name" content="html5 aelios clone">
+    <meta itemprop="description" content="See this gorgeous html5 aelios clone, pushing web boundaries">
+    <meta itemprop="image" content="http://alexw.me/aelios/img/preview.jpg">
+    <link rel="image_src" href="http://alexw.me/aelios/img/preview.jpg" />
 
     <!-- Choose how to handle the phone status bar -->
     <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Aelios html5 clone</title>
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/avgrund.css"/>
 <!--    <script type="text/javascript" src="../live.js"></script>-->
     <script type="text/javascript" src="js/jquery-1.6.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-    <script type="text/javascript" src="js/jquery.loader3.js"></script>
-<!--    <script>-->
-<!--        $(document).ready(function(){-->
-<!--            $.preLoadGUI(-->
-<!--                {load: [-->
-<!--                    ['img/black_linen.png', 'img'],-->
-<!--                    ['img/icon.jpg', 'img'],-->
-<!--                    ['js/jquery.transform.js', 'js'],-->
-<!--                    ['js/audioManager.js', 'js'],-->
-<!--                    ['js/rotator.js', 'js'],-->
-<!--                    ['js/script.js', 'js'],-->
-<!--                    []-->
-<!--                ],-->
-<!--                step : function(perc){-->
-<!--                    perc = parseInt(perc/2);-->
-<!--                    $('#installprogress').animate({width:perc + '%'},200);-->
-<!--                },-->
-<!--                complete : function(){-->
-<!--                    $('html').addClass('loaded');-->
-<!--                    $('#installprogress').animate({width:'100%'},1000);-->
-<!--                    aelios.init();-->
-<!--                }-->
-<!--                }-->
-<!--            );-->
-<!--        });-->
-<!--    </script>-->
-    <script type="text/javascript" src="js/jquery.transform.js"></script>
-    <script type="text/javascript" src="js/audioManager.js"></script>
+<!--    <script type="text/javascript" src="js/jquery.loader3.js"></script>-->
+    <script type="text/javascript" src="js/plugins-ck.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.preLoadGUI(
+                {load: [
+                    ['img/black_linen.png', 'img'],
+                    ['img/icon.jpg', 'img'],
+                    ['js/jquery.transform.js', 'js'],
+                    ['js/audioManager.js', 'js'],
+                    ['js/rotator.js', 'js'],
+                    ['js/script.js', 'js'],
+                    []
+                ],
+                step : function(perc){
+                    perc = parseInt(perc/2);
+                    $('#installprogress').animate({width:perc + '%'},200);
+                },
+                complete : function(){
+                    $('html').addClass('loaded');
+                    $('#installprogress').animate({width:'100%'},1000);
+                    aelios.init();
+                }
+                }
+            );
+        });
 
-    <script type="text/javascript" src="js/rotator.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
+    </script>
+<!--    <script type="text/javascript" src="js/jquery.transform.js"></script>-->
+<!--    <script type="text/javascript" src="js/audioManager.js"></script>-->
+
+<!--    <script type="text/javascript" src="js/rotator.js"></script>-->
+    <script type="text/javascript" src="js/script-ck.js"></script>
+<!--    <script type="text/javascript" src="js/avgrund.js"></script>-->
     <script>
         $('document').ready(function(){
-            $('html').addClass('loaded loaded2');
-            aelios.init();
+//            $('html').addClass('loaded loaded2');
+//            aelios.init();
         })
     </script>
 </head>
@@ -61,6 +76,56 @@
         </div>
     </div>
 </div>
+<aside id="default-popup" class="avgrund-popup">
+    <a href="https://github.com/altryne/aelios"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <h2>Aelios weather html5 clone</h2>
+
+    <p>
+        This is a html5 clone of the awesome ipad app "aelios weather".
+        <br>Check it out <a href="http://aeliosapp.com">here</a>
+        </p>
+    <p>
+        I'm releasing this almost a year ago, after it sat lonely on my HD and collected dust.
+        <br>
+        I instantly fell in love with aelios idea and execution, and I wanted to see if it can be re-created with html5 technologies.
+        Many of the functionality is still missing, there's no "week view" and the weather while almost working is a dud.
+        <br>
+        Fork me on github and help me out, we can make this project a beauty
+    </p>
+
+    <p>
+        Features :
+    <ul>
+        <li>Smart location selector - locks to the most highly populated location</li>
+        <li>24 hour virtual watch - showing midnight and noon times, featuring day and nighttime indicators</li>
+        <li>Rotation dial - turn the ring to see the shutter effect</li>
+        <li>Weather report (dummy) - shows the weather for each timeframe once clicked on location</li>
+    </ul>
+    Credits :
+    <ul>
+        <li>Graphics, Coding - me (alex wolkov) , <a href="http://twitter.com/altryne">@altryne</a></li>
+        <li>Jilion - creator of aelios, icon, and idea - awesome job guys, you are my heroes</li>
+        <li><a href="http://cubiq.org/rotating-wheel-for-your-iphone-webapps">Rotating control</a>- <a href="http://twitter.com/cubiq">@cubiq</a></li>
+        <li>Avgrund - @hakimel</li>
+    </ul>
+    </p>
+    <div id="fb-root"></div>
+    <ul class="social_buttons" style="position: absolute;">
+    	  <li>
+              <div class="fb-like" data-href="http://alexw.me/aelios" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false"></div>
+          </li>
+    	  <li>
+    	    <a href="http://twitter.com/share" data-related="altryne" data-url="http://alexw.me/aelios" data-via="altryne"
+    	      data-text="Gorgeous Aelios ipad app html5 clone"
+    	      class="twitter-share-button">Tweet</a>
+    	  </li>
+        <li>
+            <a href="https://twitter.com/altryne" class="twitter-follow-button" data-show-count="false" data-dnt="true">Follow @altryne</a>
+        </li>
+    	</ul>
+</aside>
+
+<div class="avgrund-contents">
 <div id="mainmap" style="width:100%; height:100%">
 
 </div>
@@ -205,17 +270,34 @@
     <div id="overlay">
         <canvas id="overlayCanvas" width="100%" height="100%"></canvas>
     </div>
-    <div id="title">
+    <div id="title" title="click here to see a weather report for this location">
         <div id="titleCont">
             <div id='location'>Somewhere...</div>
             <div id='country'>World</div>
             <input type="text" id="searchInput" placeholder="Search"/>
         </div>
     </div>
-    <div id="mylocation"></div>
-    <div id="search"></div>
+    <div id="mylocation" title="click here to go to your gps location"></div>
+    <div id="search" title="click here to search the world"></div>
+    <div id="info" title="Click here to see info">i</div>
+</div>
 </div>
 <audio src="sounds/click.wav" id="clickSound" preload="auto"></audio>
 <audio src="sounds/btn.wav" id="btnSound" preload="auto"></audio>
+
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7437527-6']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 </body>
 </html>
