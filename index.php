@@ -10,10 +10,12 @@
     <meta name="description" content="Aelios html5 clone">
    	<meta name="author" content="Alex Wolkov">
 
-    <meta property="og:title" content="title" />
-    <meta property="og:description" content="description" />
-    <meta property="og:image" content="thumbnail_image" />
-    <meta property="og:image:url" content="http://alexw.me/aelios/img/preview.jpg" />
+    <meta property="og:title" content="aelios html5 clone" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://alexw.me/aelios" />
+    <meta property="og:image" content="http://alexw.me/aelios/img/preview.jpg" />
+    <meta property="og:site_name" content="html5 aelios clone" />
+    <meta property="fb:admins" content="619421487" />
 
     <meta itemprop="name" content="html5 aelios clone">
     <meta itemprop="description" content="See this gorgeous html5 aelios clone, pushing web boundaries">
