@@ -1,9 +1,10 @@
-## Aelios weather html5 clone
+Aelios weather html5 clone
+==========================
 
-This is a html5 clone of the awesome ipad app "aelios weather".   
-Check it out [here][1] 
+This is a html5 clone of the awesome ipad app "[aelios weather](http://aeliosapp.com)".
 
- [1]: http://aeliosapp.com
+[See demo](http://alexw.me/aelios)
+--------
 
 I'm releasing this almost a year ago, after it sat lonely on my HD and collected dust.   
 I instantly fell in love with aelios idea and execution, and I wanted to see if it can be re-created with html5 technologies. Many of the functionality is still missing, there's no "week view" and the weather while almost working is a dud.   
@@ -15,11 +16,7 @@ Features :
 *   Rotation dial - turn the ring to see the shutter effect
 *   Weather report (dummy) - shows the weather for each timeframe once clicked on location Credits : 
 
-*   Graphics, Coding - me (alex wolkov) , [@altryne][2]
+*   Graphics, Coding - me (alex wolkov) , [@altryne](http://twitter.com/altryne)
 *   Jilion - creator of aelios, icon, and idea - awesome job guys, you are my heroes
-*   [Rotating control][3]- [@cubiq][4]
-*   Avgrund - @hakimel
-
- [2]: http://twitter.com/altryne
- [3]: http://cubiq.org/rotating-wheel-for-your-iphone-webapps
- [4]: http://twitter.com/cubiq
+*   [Rotating control](http://cubiq.org/rotating-wheel-for-your-iphone-webapps)- [@cubiq](http://twitter.com/cubiq)
+*   Avgrund - [@hakimel](http://twitter.com/cubiq)
