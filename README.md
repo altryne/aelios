@@ -4,6 +4,9 @@ Aelios weather html5 clone
 This is a html5 clone of the awesome ipad app "[aelios weather](http://aeliosapp.com)".
 
 [See demo](http://alexw.me/aelios)
+=============
+
+Story
 --------
 
 I'm releasing this almost a year ago, after it sat lonely on my HD and collected dust.   
