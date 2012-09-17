@@ -13,6 +13,7 @@
     <meta property="og:title" content="title" />
     <meta property="og:description" content="description" />
     <meta property="og:image" content="thumbnail_image" />
+    <meta property="og:image:url" content="http://alexw.me/aelios/img/preview.jpg" />
 
     <meta itemprop="name" content="html5 aelios clone">
     <meta itemprop="description" content="See this gorgeous html5 aelios clone, pushing web boundaries">
