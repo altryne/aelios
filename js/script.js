@@ -187,7 +187,7 @@ aelios = {
                 aelios.overlayOff();
             }
         });
-        $('#overlay').bind('click',aelios.overlayOff());
+        $('#overlay').bind('click', aelios.overlayOff);
         
     },
     getBoundingBox : function(){
